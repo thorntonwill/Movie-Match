@@ -137,6 +137,16 @@ const MovieMatch = () => {
     1: false,
     2: false,
   });
+  const [consecutiveWrongs, setConsecutiveWrongs] = useState<PlayerMap>({
+    0: 0,
+    1: 0,
+    2: 0,
+  });
+  const [eliminatedPlayers, setEliminatedPlayers] = useState<PlayerMap>({
+    0: false,
+    1: false,
+    2: false,
+  });
 
   // Handle outside clicks for dropdown
   useEffect(() => {

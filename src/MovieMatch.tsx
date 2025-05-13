@@ -2099,8 +2099,14 @@ const MovieMatch = () => {
   );
 };
 
-export default MovieMatch;font-medium mb-2 text-yellow-200">
-                  Did you mean:{" "}
-                  <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>?
-                </p>
-                <p className="
+export default function MovieMatch() {
+  return (
+    <>
+      <p className="font-medium mb-2 text-yellow-200">
+        Did you mean:{" "}
+      </p>
+      <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>
+      <p className="">
+    </>
+  );
+}

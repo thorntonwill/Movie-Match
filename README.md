@@ -1,6 +1,7 @@
-# React + Tailwind
+# Movie + Match
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. One top of the standard Vite setup, [tailwindcss](https://tailwindcss.com/) is installed and ready to be used in React components.
+This game matches actors with movies and movies with actors. Have fun
+- Will
 
 Additional references:
 * [Getting started with Vite](https://vitejs.dev/guide/)

@@ -745,12 +745,13 @@ const MovieMatch = () => {
       }
 
       setSelectedItem(detailedItem);
-    setSearchQuery(
-      "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-      : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
-      );
-      setShowDropdown(false);
-    } catch (error) {
+setSearchQuery(
+      gameMode === "actor_to_movies" 
+        ? ("name" in selectedItem ? (selectedItem as PersonDetails).name : "")
+        : ("title" in selectedItem ? (selectedItem as MovieDetails).title : "")
+    );
+    setShowDropdown(false);
+  } catch (error) {
       console.error("Error selecting item:", error);
       setValidationResult({
         valid: false,

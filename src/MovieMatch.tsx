@@ -1242,7 +1242,7 @@ const MovieMatch = () => {
                 {gameMode === "actor_to_movies"
                   ? "name" in selectedItem ? selectedItem.name : ""
                   : "title" in selectedItem ? selectedItem.title : ""
-              </div>
+              }
               <div className="text-sm text-gray-600">
                 {gameMode === "actor_to_movies"
                   ? "Name a movie starring this actor"

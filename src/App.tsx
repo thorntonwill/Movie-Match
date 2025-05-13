@@ -1,7 +1,4 @@
-import { useState } from 'react';
-// Import your components
 import MovieMatch from './MovieMatch';
-
 function App() {
   return (
     <div className="App">
@@ -9,5 +6,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

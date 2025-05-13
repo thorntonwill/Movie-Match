@@ -747,8 +747,8 @@ const MovieMatch = () => {
       setSelectedItem(detailedItem);
 setSearchQuery(
       gameMode === "actor_to_movies" 
-        ? ("name" in selectedItem ? (selectedItem as PersonDetails).name : "")
-        : ("title" in selectedItem ? (selectedItem as MovieDetails).title : "")
+        ? ("name" in selectedItem! ? (selectedItem as PersonDetails).name : "")
+        : ("title" in selectedItem! ? (selectedItem as MovieDetails).title : "")
     );
     setShowDropdown(false);
   } catch (error) {

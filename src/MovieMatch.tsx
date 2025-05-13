@@ -1,4 +1,184 @@
-import { useState, useEffect, useRef } from "react";
+{gameState === "setup" && (
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+          <h2 className="text-lg font-bold mb-3 text-yellow-400">
+            {gameMode === "actor_to_movies"
+              ? "Select an Actor"
+              : "Select a Movie"}
+          </h2>
+
+          <div className="relative mb-4" ref={dropdownRef}>
+            <div className="flex w-full">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => {
+                  setShowDropdown(true);
+                  if (!searchQuery.trim()) {
+                    if (gameMode === "actor_to_movies") {
+                      fetchPopularPeople();
+                    } else {
+                      fetchPopularMovies();
+                    }
+                  }
+                }}
+                placeholder={
+                  gameMode === "actor_to_movies"
+                    ? "Search for an actor..."
+                    : "Search for a movie..."
+                }
+                className="flex-grow p-2 border rounded-l bg-gray-800 text-white border-gray-700"
+              />
+              <button
+                onClick={() => {
+                  setShowDropdown(!showDropdown);
+                  if (!showDropdown) {
+                    performSearch(searchQuery);
+                  }
+                }}
+                className="bg-yellow-600 text-white py-2 px-3 rounded-r hover:bg-yellow-700 transition-colors"
+                disabled={searchLoading}
+              >
+                {searchLoading ? "..." : <Search size={18} />}
+              </button>
+            </div>
+
+            {/* Random selection buttons */}
+            <div className="flex mt-2 mb-3 space-x-2">
+              <button
+                onClick={gameMode === "actor_to_movies" ? fetchRandomActor : fetchRandomMovie}
+                className="flex-1 bg-green-600 text-white py-2 px-3 rounded flex items-center justify-center hover:bg-green-700 transition-colors"
+              >
+                <Shuffle size={16} className="mr-1" />
+                {gameMode === "actor_to_movies" ? "Random Actor" : "Random Movie"}
+              </button>
+            </div>
+
+            {showDropdown && searchResults.length > 0 && (
+              <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-10 mt-1">
+                {searchQuery.trim().length === 0 && (
+                  <div className="p-2 bg-gray-700 text-sm font-medium border-b border-gray-600 text-yellow-300">
+                    {gameMode === "actor_to_movies"
+                      ? "Popular Actors"
+                      : "Popular Movies"}
+                  </div>
+                )}
+
+                {searchResults.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => selectSearchResult(item)}
+                    className="flex items-center p-2 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
+                  >
+                    <div className="w-12 h-16 bg-gray-900 rounded mr-3 overflow-hidden">
+                      <img
+                        src={
+                          gameMode === "actor_to_movies"
+                            ? (item as PersonResult).profile_path
+                            : (item as MovieResult).poster_path
+                        }
+                        alt={
+                          gameMode === "actor_to_movies"
+                            ? (item as PersonResult).name
+                            : (item as MovieResult).title
+                        }
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium text-white">
+                        {gameMode === "actor_to_movies"
+                          ? (item as PersonResult).name
+                          : (item as MovieResult).title}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {gameMode === "actor_to_movies"
+                          ? `Known for: ${
+                              (item as PersonResult).known_for_department || "Acting"
+                            }`
+                          : `Released: ${
+                              (item as MovieResult).release_date
+                                ? new Date((item as MovieResult).release_date || "").getFullYear()
+                                : "Unknown"
+                            }`}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {searchResults.length === 0 &&
+                  searchQuery.trim().length > 0 && (
+                    <div className="p-3 text-center text-gray-400">
+                      No results found for "{searchQuery}"
+                    </div>
+                  )}
+              </div>
+            )}
+          </div>
+
+          {selectedItem && (
+            <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
+              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
+                <img
+                  src={
+                    gameMode === "actor_to_movies"
+                      ? (selectedItem as PersonDetails).profile_path
+                      : (selectedItem as MovieDetails).poster_path
+                  }
+                  alt={
+                    gameMode === "actor_to_movies"
+                      ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                      : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
+                  }
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <div className="font-bold text-lg text-yellow-300">
+                  {gameMode === "actor_to_movies"
+                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
+                </div>
+                <div className="text-sm text-gray-300">
+                  {gameMode === "actor_to_movies"
+                    ? `${(selectedItem as PersonDetails).movies.length} movies found for this actor`
+                    : `${(selectedItem as MovieDetails).actors.length} actors found in this movie`}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {validationResult && (
+            <div
+              className={`mb-4 p-2 rounded text-sm ${
+                validationResult.valid
+                  ? "bg-green-900 text-green-200 border border-green-500"
+                  : "bg-red-900 text-red-200 border border-red-500"
+              }`}
+            >
+              {validationResult.message}
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            <button
+              onClick={startNewRound}
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
+            >
+              Back
+            </button>
+
+            <button
+              onClick={startGame}
+              disabled={!selectedItem}
+              className="bg-green-600 text-white py-2 px-4 rounded disabled:bg-gray-600 flex items-center hover:bg-green-700 transition-colors disabled:hover:bg-gray-600"
+            >
+              <Play size={18} className="mr-2" />
+              Start Game
+            </button>
+          </div>
+        </div>
+      )}import { useState, useEffect, useRef } from "react";
 import {
   Clock,
   Search,
@@ -9,6 +189,8 @@ import {
   Check,
   Play,
   Flag,
+  Star,
+  Shuffle,
 } from "lucide-react";
 
 // Define interfaces for data structures
@@ -18,6 +200,7 @@ interface Player {
   score: number;
   color: string;
   challengesLeft: number;
+  character: string;
 }
 
 interface MovieResult {
@@ -68,6 +251,118 @@ interface PlayerMap {
 // Custom timeout type for browser environment
 type TimeoutRef = ReturnType<typeof setTimeout> | null;
 
+// Character options for players
+const CHARACTERS = [
+  "🎭", "🎬", "🎞️", "🎥", "🍿", "🎪", "🎟️", "🎫", "🎤", "🎼"
+];
+
+// Top movies and actors for the "random" feature
+const TOP_MOVIES = [
+  { id: 238, title: "The Godfather" },
+  { id: 389, title: "12 Angry Men" },
+  { id: 155, title: "The Dark Knight" },
+  { id: 429, title: "The Good, the Bad and the Ugly" },
+  { id: 240, title: "The Godfather Part II" },
+  { id: 424, title: "Schindler's List" },
+  { id: 680, title: "Pulp Fiction" },
+  { id: 13, title: "Forrest Gump" },
+  { id: 122, title: "The Lord of the Rings: The Return of the King" },
+  { id: 769, title: "GoodFellas" },
+  { id: 550, title: "Fight Club" },
+  { id: 311, title: "Once Upon a Time in America" },
+  { id: 27205, title: "Inception" },
+  { id: 157336, title: "Interstellar" },
+  { id: 120, title: "The Lord of the Rings: The Fellowship of the Ring" },
+  { id: 121, title: "The Lord of the Rings: The Two Towers" },
+  { id: 76338, title: "Thor: The Dark World" },
+  { id: 637, title: "Life Is Beautiful" },
+  { id: 19404, title: "Dilwale Dulhania Le Jayenge" },
+  { id: 278, title: "The Shawshank Redemption" }
+];
+
+const TOP_ACTORS = [
+  { id: 3, name: "Tom Hanks" },
+  { id: 31, name: "Tom Cruise" },
+  { id: 192, name: "Morgan Freeman" },
+  { id: 2, name: "Mark Hamill" },
+  { id: 1136406, name: "Zendaya" },
+  { id: 18918, name: "Leonardo DiCaprio" },
+  { id: 3894, name: "Christian Bale" },
+  { id: 287, name: "Brad Pitt" },
+  { id: 16828, name: "Chris Evans" },
+  { id: 73457, name: "Chris Hemsworth" },
+  { id: 74568, name: "Chris Pratt" },
+  { id: 17647, name: "Scarlett Johansson" },
+  { id: 1283, name: "Helena Bonham Carter" },
+  { id: 8691, name: "Robert De Niro" },
+  { id: 52, name: "Carrie Fisher" }
+];
+
+// CSS for animations
+const styleSheet = `
+  @keyframes sparkle {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    50% { transform: translate(var(--tx), var(--ty)) rotate(var(--r)); }
+    100% { transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) rotate(calc(var(--r) * 2)); opacity: 0; }
+  }
+  
+  @keyframes curtain-open-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  
+  @keyframes curtain-open-right {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
+  }
+  
+  .curtain-left {
+    transition: transform 1.5s ease-in-out;
+  }
+  
+  .curtain-right {
+    transition: transform 1.5s ease-in-out;
+  }
+  
+  .curtain-open-left {
+    transform: translateX(-100%);
+  }
+  
+  .curtain-open-right {
+    transform: translateX(100%);
+  }
+  
+  .timer-bar {
+    transition: width 1s linear;
+  }
+  
+  .sparkle {
+    --tx: 0px;
+    --ty: 0px;
+    --r: 0deg;
+    position: absolute;
+    animation: sparkle 1.5s forwards;
+  }
+  
+  .sparkle-container-success,
+  .sparkle-container-failure {
+    pointer-events: none;
+  }
+  
+  .sparkle-success {
+    color: #FFD700;
+  }
+  
+  .sparkle-failure {
+    color: #FF4136;
+  }
+  
+  .cinema-title {
+    text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700;
+  }
+`;
+
 const MovieMatch = () => {
   // Constants
   const TMDB_API_KEY = "70581b465aebaba2ea66f7cd14976460";
@@ -90,56 +385,77 @@ const MovieMatch = () => {
   const [showDidYouMean, setShowDidYouMean] = useState<boolean>(false);
   const [didYouMeanSuggestion, setDidYouMeanSuggestion] = useState<string | null>(null);
   const [itemsDataCache, setItemsDataCache] = useState<ItemsDataCache>({});
+  
+  // Animation states
+  const [showEffect, setShowEffect] = useState<boolean>(false);
+  const [effectType, setEffectType] = useState<"success" | "failure" | null>(null);
+  const [bounceCharacter, setBounceCharacter] = useState<number | null>(null);
+  const [curtainsOpen, setCurtainsOpen] = useState<boolean>(false);
 
   // Dropdown state
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Store timeout ID to properly clear it
-  const timerRef = useRef<TimeoutRef>(null);
+  const timerRef = useRef(null);
 
   // Player states
-  const [players, setPlayers] = useState<Player[]>([
+  const [players, setPlayers] = useState([
     {
       id: 1,
       name: "Player 1",
       score: 0,
-      color: "bg-blue-500",
+      color: "bg-red-600",
       challengesLeft: 1,
+      character: "🎬"
     },
     {
       id: 2,
       name: "Player 2",
       score: 0,
-      color: "bg-red-500",
+      color: "bg-yellow-500",
       challengesLeft: 1,
+      character: "🍿"
     },
     {
       id: 3,
       name: "Player 3",
       score: 0,
-      color: "bg-green-500",
+      color: "bg-blue-600",
       challengesLeft: 1,
+      character: "🎭"
     },
   ]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
-  const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState<number | null>(null);
-  const [challengedPlayerIndex, setChallengedPlayerIndex] = useState<number | null>(null);
-  const [challengeStatus, setChallengeStatus] = useState<"success" | "failed" | null>(null);
-  const [consecutiveWrongs, setConsecutiveWrongs] = useState<PlayerMap>({
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState(null);
+  const [challengedPlayerIndex, setChallengedPlayerIndex] = useState(null);
+  const [challengeStatus, setChallengeStatus] = useState(null);
+  const [consecutiveWrongs, setConsecutiveWrongs] = useState({
     0: 0,
     1: 0,
     2: 0,
   });
-  const [eliminatedPlayers, setEliminatedPlayers] = useState<PlayerMap>({
+  const [eliminatedPlayers, setEliminatedPlayers] = useState({
     0: false,
     1: false,
     2: false,
   });
 
+  // Curtain effect when the game starts
+  useEffect(() => {
+    if (gameState === "playing") {
+      // Short delay before opening curtains
+      setTimeout(() => {
+        setCurtainsOpen(true);
+      }, 500);
+    } else if (gameState === "landing" || gameState === "setup") {
+      setCurtainsOpen(false);
+    }
+  }, [gameState]);
+
   // Handle outside clicks for dropdown
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event) {
       if (dropdownRef.current && event.target instanceof Node && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
@@ -182,8 +498,36 @@ const MovieMatch = () => {
     return () => clearTimeout(delaySearch);
   }, [searchQuery, gameState, gameMode, showDropdown]);
 
+  // Effect for animations
+  useEffect(() => {
+    let timeout = null;
+    if (showEffect) {
+      timeout = setTimeout(() => {
+        setShowEffect(false);
+      }, 1500);
+    }
+    
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [showEffect]);
+
+  // Bounce effect for character
+  useEffect(() => {
+    let timeout = null;
+    if (bounceCharacter !== null) {
+      timeout = setTimeout(() => {
+        setBounceCharacter(null);
+      }, 1000);
+    }
+    
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [bounceCharacter]);
+
   // Levenshtein distance algorithm for fuzzy matching
-  const levenshteinDistance = (str1: string, str2: string): number => {
+  const levenshteinDistance = (str1, str2) => {
     const track = Array(str2.length + 1)
       .fill(null)
       .map(() => Array(str1.length + 1).fill(null));
@@ -211,7 +555,7 @@ const MovieMatch = () => {
   };
 
   // Find close matches for "Did you mean?" feature
-  const findCloseMatch = (input: string, validOptions: string[]): string | null => {
+  const findCloseMatch = (input, validOptions) => {
     if (!input || input.length < 2) return null;
 
     const lowerInput = input.toLowerCase();
@@ -254,7 +598,7 @@ const MovieMatch = () => {
   };
 
   // API search function
-  const performSearch = async (query: string): Promise<void> => {
+  const performSearch = async (query) => {
     if (!query.trim() && gameState === "setup") {
       if (gameMode === "actor_to_movies") {
         fetchPopularPeople();
@@ -281,8 +625,86 @@ const MovieMatch = () => {
     }
   };
 
+  // Fetch top 100 movies
+  const fetchRandomMovie = async (): Promise<void> => {
+    setSearchLoading(true);
+    try {
+      // Select a random movie from the TOP_MOVIES list
+      const randomIndex = Math.floor(Math.random() * TOP_MOVIES.length);
+      const randomMovie = TOP_MOVIES[randomIndex];
+      
+      // Fetch details for the movie
+      const response = await fetch(
+        `${TMDB_BASE_URL}/movie/${randomMovie.id}?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      const movieWithPoster = {
+        ...data,
+        poster_path: data.poster_path
+          ? `${TMDB_IMAGE_BASE_URL}/w185${data.poster_path}`
+          : `https://via.placeholder.com/185x278?text=${encodeURIComponent(data.title)}`
+      };
+      
+      setSearchResults([movieWithPoster]);
+      
+      // Automatically select this movie
+      selectSearchResult(movieWithPoster);
+      
+    } catch (error) {
+      console.error("Error fetching random movie:", error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Fetch random actor from top 50
+  const fetchRandomActor = async (): Promise<void> => {
+    setSearchLoading(true);
+    try {
+      // Select a random actor from the TOP_ACTORS list
+      const randomIndex = Math.floor(Math.random() * TOP_ACTORS.length);
+      const randomActor = TOP_ACTORS[randomIndex];
+      
+      // Fetch details for the actor
+      const response = await fetch(
+        `${TMDB_BASE_URL}/person/${randomActor.id}?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      const actorWithProfilePic = {
+        ...data,
+        profile_path: data.profile_path
+          ? `${TMDB_IMAGE_BASE_URL}/w185${data.profile_path}`
+          : `https://via.placeholder.com/185x278?text=${encodeURIComponent(data.name)}`
+      };
+      
+      setSearchResults([actorWithProfilePic]);
+      
+      // Automatically select this actor
+      selectSearchResult(actorWithProfilePic);
+      
+    } catch (error) {
+      console.error("Error fetching random actor:", error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   // Fetch popular people
-  const fetchPopularPeople = async (): Promise<void> => {
+  const fetchPopularPeople = async () => {
     setSearchLoading(true);
     try {
       const response = await fetch(
@@ -293,7 +715,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const peopleWithBasicInfo = data.results.slice(0, 6).map((person: PersonResult) => ({
+      const peopleWithBasicInfo = data.results.slice(0, 6).map((person) => ({
         ...person,
         profile_path: person.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
@@ -312,7 +734,7 @@ const MovieMatch = () => {
   };
 
   // Fetch popular movies
-  const fetchPopularMovies = async (): Promise<void> => {
+  const fetchPopularMovies = async () => {
     setSearchLoading(true);
     try {
       const response = await fetch(
@@ -323,7 +745,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const moviesWithBasicInfo = data.results.slice(0, 6).map((movie: MovieResult) => ({
+      const moviesWithBasicInfo = data.results.slice(0, 6).map((movie) => ({
         ...movie,
         poster_path: movie.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${movie.poster_path}`
@@ -342,7 +764,7 @@ const MovieMatch = () => {
   };
 
   // Search for people
-  const searchPeople = async (query: string): Promise<PersonResult[]> => {
+  const searchPeople = async (query) => {
     try {
       const response = await fetch(
         `${TMDB_BASE_URL}/search/person?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
@@ -354,7 +776,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const formattedResults = data.results.slice(0, 6).map((person: PersonResult) => ({
+      const formattedResults = data.results.slice(0, 6).map((person) => ({
         ...person,
         profile_path: person.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
@@ -371,7 +793,7 @@ const MovieMatch = () => {
   };
 
   // Search for movies
-  const searchMovies = async (query: string): Promise<MovieResult[]> => {
+  const searchMovies = async (query) => {
     try {
       const response = await fetch(
         `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
@@ -383,7 +805,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const formattedResults = data.results.slice(0, 6).map((movie: MovieResult) => ({
+      const formattedResults = data.results.slice(0, 6).map((movie) => ({
         ...movie,
         poster_path: movie.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${movie.poster_path}`
@@ -400,10 +822,10 @@ const MovieMatch = () => {
   };
 
   // Fetch person details
-  const fetchPersonDetails = async (personId: number): Promise<PersonDetails | null> => {
+  const fetchPersonDetails = async (personId) => {
     const cacheKey = `person_${personId}`;
     if (itemsDataCache[cacheKey]) {
-      return itemsDataCache[cacheKey] as PersonDetails;
+      return itemsDataCache[cacheKey];
     }
 
     try {
@@ -417,12 +839,12 @@ const MovieMatch = () => {
 
       const movies =
         data.movie_credits?.cast
-          ?.filter((movie: MovieResult) => movie.release_date)
-          ?.sort((a: MovieResult, b: MovieResult) => (b.popularity || 0) - (a.popularity || 0))
+          ?.filter((movie) => movie.release_date)
+          ?.sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
           ?.slice(0, 30)
-          ?.map((movie: MovieResult) => movie.title) || [];
+          ?.map((movie) => movie.title) || [];
 
-      const personWithMovies: PersonDetails = {
+      const personWithMovies = {
         ...data,
         profile_path: data.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${data.profile_path}`
@@ -445,10 +867,10 @@ const MovieMatch = () => {
   };
 
   // Fetch movie details
-  const fetchMovieDetails = async (movieId: number): Promise<MovieDetails | null> => {
+  const fetchMovieDetails = async (movieId) => {
     const cacheKey = `movie_${movieId}`;
     if (itemsDataCache[cacheKey]) {
-      return itemsDataCache[cacheKey] as MovieDetails;
+      return itemsDataCache[cacheKey];
     }
 
     try {
@@ -462,11 +884,11 @@ const MovieMatch = () => {
 
       const actors =
         data.credits?.cast
-          ?.sort((a: PersonResult, b: PersonResult) => (a as any).order - (b as any).order)
+          ?.sort((a, b) => a.order - b.order)
           ?.slice(0, 30)
-          ?.map((actor: PersonResult) => actor.name) || [];
+          ?.map((actor) => actor.name) || [];
 
-      const movieWithActors: MovieDetails = {
+      const movieWithActors = {
         ...data,
         poster_path: data.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${data.poster_path}`
@@ -489,7 +911,7 @@ const MovieMatch = () => {
   };
 
   // Handle correct answers
-  const handleCorrectAnswer = (item: string): void => {
+  const handleCorrectAnswer = (item) => {
     setNamedItems((prev) => [...prev, item]);
     setInputValue("");
     setValidationResult({
@@ -497,6 +919,11 @@ const MovieMatch = () => {
       message: "Correct!",
     });
     setLastCorrectPlayerIndex(currentPlayerIndex);
+    
+    // Show success effect
+    setEffectType("success");
+    setShowEffect(true);
+    setBounceCharacter(currentPlayerIndex);
 
     // Reset consecutive wrong answers for this player
     setConsecutiveWrongs((prev) => ({
@@ -525,17 +952,21 @@ const MovieMatch = () => {
   };
 
   // Handle incorrect answers
-  const handleIncorrectAnswer = (message: string): void => {
+  const handleIncorrectAnswer = (message) => {
+    // Show failure effect
+    setEffectType("failure");
+    setShowEffect(true);
+    
     // Increment consecutive wrong answers for this player
     const newConsecutiveWrongs = {
       ...consecutiveWrongs,
-      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex] as number) + 1,
+      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex]) + 1,
     };
     setConsecutiveWrongs(newConsecutiveWrongs);
 
     // Create appropriate message
     const wrongsRemaining =
-      MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex] as number);
+      MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex]);
     const wrongMessage =
       wrongsRemaining > 0
         ? `${message} ${wrongsRemaining} more incorrect answer${
@@ -548,7 +979,7 @@ const MovieMatch = () => {
       message: wrongMessage,
     });
 
-    if ((newConsecutiveWrongs[currentPlayerIndex] as number) >= MAX_WRONG_ANSWERS) {
+    if ((newConsecutiveWrongs[currentPlayerIndex]) >= MAX_WRONG_ANSWERS) {
       // Player is eliminated
       const newEliminatedPlayers = {
         ...eliminatedPlayers,
@@ -592,7 +1023,7 @@ const MovieMatch = () => {
   };
 
   // Handle "Did you mean?" suggestions
-  const acceptSuggestion = (): void => {
+  const acceptSuggestion = () => {
     if (didYouMeanSuggestion) {
       handleCorrectAnswer(didYouMeanSuggestion);
     }
@@ -600,19 +1031,19 @@ const MovieMatch = () => {
     setDidYouMeanSuggestion(null);
   };
 
-  const rejectSuggestion = (): void => {
+  const rejectSuggestion = () => {
     handleIncorrectAnswer("Incorrect answer.");
     setShowDidYouMean(false);
     setDidYouMeanSuggestion(null);
   };
 
   // Move to next player
-  const moveToNextPlayer = (): void => {
+  const moveToNextPlayer = () => {
     // Find the next non-eliminated player
     let nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
     let loopCount = 0;
 
-    while ((eliminatedPlayers[nextPlayerIndex] as boolean) && loopCount < players.length) {
+    while ((eliminatedPlayers[nextPlayerIndex]) && loopCount < players.length) {
       nextPlayerIndex = (nextPlayerIndex + 1) % players.length;
       loopCount++;
     }
@@ -629,18 +1060,22 @@ const MovieMatch = () => {
   };
 
   // Handle time up
-  const handleTimeUp = (): void => {
+  const handleTimeUp = () => {
     setTimerActive(false);
+    
+    // Show failure effect
+    setEffectType("failure");
+    setShowEffect(true);
 
     // Increment consecutive wrong answers for this player
     const newConsecutiveWrongs = {
       ...consecutiveWrongs,
-      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex] as number) + 1,
+      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex]) + 1,
     };
     setConsecutiveWrongs(newConsecutiveWrongs);
 
     // Check if player should be eliminated
-    if ((newConsecutiveWrongs[currentPlayerIndex] as number) >= MAX_WRONG_ANSWERS) {
+    if ((newConsecutiveWrongs[currentPlayerIndex]) >= MAX_WRONG_ANSWERS) {
       const newEliminatedPlayers = {
         ...eliminatedPlayers,
         [currentPlayerIndex]: true,
@@ -666,7 +1101,7 @@ const MovieMatch = () => {
     } else {
       // Player gets a warning
       const wrongsRemaining =
-        MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex] as number);
+        MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex]);
       setValidationResult({
         valid: false,
         message: `Time's up! ${wrongsRemaining} more and you're out!`,
@@ -692,7 +1127,7 @@ const MovieMatch = () => {
   };
 
   // Issue a challenge
-  const issueChallenge = (targetPlayerIndex: number): void => {
+  const issueChallenge = (targetPlayerIndex) => {
     // Check if current player has challenges left
     if (players[currentPlayerIndex].challengesLeft <= 0) {
       return;
@@ -713,7 +1148,7 @@ const MovieMatch = () => {
   };
 
   // Select a search result
-  const selectSearchResult = async (item: SearchResult): Promise<void> => {
+  const selectSearchResult = async (item) => {
     setSelectedItem(null); // Clear previous selection
     setValidationResult(null); // Clear any validation messages
 
@@ -745,13 +1180,13 @@ const MovieMatch = () => {
       }
 
       setSelectedItem(detailedItem);
-setSearchQuery(
-      gameMode === "actor_to_movies" 
-        ? ("name" in selectedItem! ? (selectedItem as PersonDetails).name : "")
-        : ("title" in selectedItem! ? (selectedItem as MovieDetails).title : "")
-    );
-    setShowDropdown(false);
-  } catch (error) {
+      setSearchQuery(
+        gameMode === "actor_to_movies" 
+          ? (item.name || "")
+          : (item.title || "")
+      );
+      setShowDropdown(false);
+    } catch (error) {
       console.error("Error selecting item:", error);
       setValidationResult({
         valid: false,
@@ -761,7 +1196,7 @@ setSearchQuery(
   };
 
   // Validate movie input
-  const validateMovie = (movie: string): void => {
+  const validateMovie = (movie) => {
     if (!selectedItem) return;
     
     const movieTitle = movie.trim();
@@ -777,7 +1212,7 @@ setSearchQuery(
     }
 
     // First check for exact match (case insensitive)
-    const personDetails = selectedItem as PersonDetails;
+    const personDetails = selectedItem;
     const exactMatch = personDetails.movies.find(
       (m) => m.toLowerCase() === movieTitleLower
     );
@@ -799,7 +1234,7 @@ setSearchQuery(
   };
 
   // Validate actor input
-  const validateActor = (actor: string): void => {
+  const validateActor = (actor) => {
     if (!selectedItem) return;
     
     const actorName = actor.trim();
@@ -815,7 +1250,7 @@ setSearchQuery(
     }
 
     // First check for exact match (case insensitive)
-    const movieDetails = selectedItem as MovieDetails;
+    const movieDetails = selectedItem;
     const exactMatch = movieDetails.actors.find(
       (a) => a.toLowerCase() === actorNameLower
     );
@@ -837,7 +1272,7 @@ setSearchQuery(
   };
 
   // Validate input
-  const validateInput = (): void => {
+  const validateInput = () => {
     if (!inputValue.trim()) return;
 
     if (gameMode === "actor_to_movies") {
@@ -848,7 +1283,7 @@ setSearchQuery(
   };
 
   // Start game
-  const startGame = (): void => {
+  const startGame = () => {
     if (!selectedItem) return;
 
     setGameState("playing");
@@ -869,7 +1304,7 @@ setSearchQuery(
   };
 
   // End round
-  const endRound = (): void => {
+  const endRound = () => {
     setTimerActive(false);
     setGameState("roundEnd");
 
@@ -893,6 +1328,11 @@ setSearchQuery(
       updatedPlayers[winnerIndex].score += 1;
       setPlayers(updatedPlayers);
       setLastCorrectPlayerIndex(winnerIndex);
+      
+      // Show success effect for winner
+      setBounceCharacter(winnerIndex);
+      setEffectType("success");
+      setShowEffect(true);
 
       // Check if any player has won (3 points)
       if (updatedPlayers[winnerIndex].score >= 3) {
@@ -902,7 +1342,7 @@ setSearchQuery(
   };
 
   // Start new round
-  const startNewRound = (): void => {
+  const startNewRound = () => {
     setGameMode(null);
     setSelectedItem(null);
     setSearchQuery("");
@@ -913,7 +1353,7 @@ setSearchQuery(
   };
 
   // Reset game
-  const resetGame = (): void => {
+  const resetGame = () => {
     setGameMode(null);
     setSelectedItem(null);
     setSearchQuery("");
@@ -928,15 +1368,24 @@ setSearchQuery(
     setEliminatedPlayers({ 0: false, 1: false, 2: false });
   };
 
+  // Update player character
+  const updatePlayerCharacter = (playerId) => {
+    const updatedPlayers = [...players];
+    const currentCharIndex = CHARACTERS.indexOf(updatedPlayers[playerId-1].character);
+    const nextCharIndex = (currentCharIndex + 1) % CHARACTERS.length;
+    updatedPlayers[playerId-1].character = CHARACTERS[nextCharIndex];
+    setPlayers(updatedPlayers);
+  };
+
   // Mode selection handlers
-  const selectActorToMovies = (): void => {
+  const selectActorToMovies = () => {
     setGameMode("actor_to_movies");
     setGameState("setup");
     // Initialize with popular people
     fetchPopularPeople();
   };
 
-  const selectMovieToActors = (): void => {
+  const selectMovieToActors = () => {
     setGameMode("movie_to_actors");
     setGameState("setup");
     // Initialize with popular movies
@@ -944,7 +1393,7 @@ setSearchQuery(
   };
 
   // Handle key press for input
-  const handleKeyPress = (e: React.KeyboardEvent): void => {
+  const handleKeyPress = (e) => {
     if (e.key === "Enter" && inputValue.trim()) {
       validateInput();
     }
@@ -954,13 +1403,57 @@ setSearchQuery(
   const currentPlayer = players[currentPlayerIndex];
   const winner = players.find((player) => player.score >= 3);
 
+  // Render function for sparkles effect
+  const renderSparkles = () => {
+    if (!showEffect) return null;
+    
+    return (
+      <div className={`absolute inset-0 pointer-events-none z-40 
+        ${effectType === "success" ? "sparkle-container-success" : "sparkle-container-failure"}`}>
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div 
+            key={i}
+            className={`absolute sparkle 
+              ${effectType === "success" ? "sparkle-success" : "sparkle-failure"}`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 0.5}s`,
+              '--tx': `${(Math.random() - 0.5) * 100}px`,
+              '--ty': `${(Math.random() - 0.5) * 100}px`,
+              '--r': `${Math.random() * 360}deg`
+            }}
+          >
+            {effectType === "success" ? <Star size={16} /> : <X size={16} />}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-lg max-w-md mx-auto text-gray-800 min-h-screen">
+    <div className="flex flex-col items-center bg-red-900 p-4 rounded-lg shadow-lg max-w-md mx-auto text-white min-h-screen relative overflow-hidden">
+      {/* Add style tag for animations */}
+      <style dangerouslySetInnerHTML={{ __html: styleSheet }} />
+      
+      {/* Theater curtains */}
+      <div className={`absolute top-0 left-0 w-1/2 h-full bg-red-800 curtain-left z-20 ${curtainsOpen ? "curtain-open-left" : ""}`}></div>
+      <div className={`absolute top-0 right-0 w-1/2 h-full bg-red-800 curtain-right z-20 ${curtainsOpen ? "curtain-open-right" : ""}`}></div>
+      
+      {/* Sparkles effect overlay */}
+      {renderSparkles()}
+      
+      {/* Movie theater lights */}
+      <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+      <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+      <div className="absolute bottom-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+      <div className="absolute bottom-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+
       {/* Header */}
-      <div className="w-full mb-4 text-center">
-        <h1 className="text-2xl font-bold mb-2">Movie Match</h1>
+      <div className="w-full mb-4 text-center z-30">
+        <h1 className="text-3xl font-bold mb-2 text-yellow-400 cinema-title">Movie Match</h1>
         {gameState !== "landing" && (
-          <p className="text-sm">
+          <p className="text-sm text-yellow-200">
             {gameMode === "actor_to_movies"
               ? "Name movies starring this actor"
               : "Name actors starring in this movie"}
@@ -970,28 +1463,34 @@ setSearchQuery(
 
       {/* Player Scores */}
       {gameState !== "landing" && (
-        <div className="flex justify-between w-full mb-4">
+        <div className="flex justify-between w-full mb-4 z-30">
           {players.map((player, index) => (
             <div
               key={player.id}
-              className={`flex flex-col items-center p-2 rounded-lg ${
-                currentPlayerIndex === index &&
-                (gameState === "playing" || gameState === "challenge")
-                  ? `${player.color} text-white`
-                  : challengedPlayerIndex === index && gameState === "challenge"
-                  ? "bg-yellow-500 text-white"
-                  : eliminatedPlayers[index]
-                  ? "bg-gray-400 text-white opacity-60"
-                  : "bg-gray-200"
-              }`}
+              className={`flex flex-col items-center p-2 rounded-lg transition-all duration-300 
+                ${bounceCharacter === index ? "animate-bounce" : ""}
+                ${currentPlayerIndex === index &&
+                  (gameState === "playing" || gameState === "challenge")
+                    ? `${player.color} shadow-lg shadow-yellow-300/50`
+                    : challengedPlayerIndex === index && gameState === "challenge"
+                    ? "bg-yellow-500 text-black shadow-lg shadow-yellow-300/50"
+                    : eliminatedPlayers[index]
+                    ? "bg-gray-700 text-gray-400 opacity-60"
+                    : "bg-gray-900"
+                }`}
             >
-              <User className="mb-1" size={20} />
+              <div 
+                className="text-2xl mb-1 cursor-pointer" 
+                onClick={() => updatePlayerCharacter(player.id)}
+              >
+                {player.character}
+              </div>
               <div className="text-sm font-bold">
                 {player.name}
                 {eliminatedPlayers[index] && " (Out)"}
               </div>
               <div className="flex items-center mt-1">
-                <Award size={16} />
+                <Award size={16} className="text-yellow-400" />
                 <span className="ml-1 text-lg font-bold">{player.score}</span>
               </div>
             </div>
@@ -1001,33 +1500,33 @@ setSearchQuery(
 
       {/* Game Screens */}
       {gameState === "landing" && (
-        <div className="w-full bg-white rounded-lg p-6 shadow mb-6">
-          <h2 className="text-xl font-bold mb-4 text-center">How to Play</h2>
+        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+          <h2 className="text-xl font-bold mb-4 text-center text-yellow-400">How to Play</h2>
 
           <div className="mb-6">
-            <p className="mb-2">Choose a game mode:</p>
-            <ul className="list-disc pl-5 mb-4">
+            <p className="mb-2 text-yellow-100">Choose a game mode:</p>
+            <ul className="list-disc pl-5 mb-4 text-yellow-100">
               <li className="mb-2">
-                <strong>Actor → Movies:</strong> Players take turns naming
+                <strong className="text-yellow-300">Actor → Movies:</strong> Players take turns naming
                 movies starring a specific actor
               </li>
               <li className="mb-2">
-                <strong>Movie → Actors:</strong> Players take turns naming
+                <strong className="text-yellow-300">Movie → Actors:</strong> Players take turns naming
                 actors from a specific movie
               </li>
             </ul>
-            <p className="mb-2">
+            <p className="mb-2 text-yellow-100">
               Each player has 30 seconds to name a valid item.
             </p>
-            <p className="mb-2">
+            <p className="mb-2 text-yellow-100">
               Get 2 consecutive wrong answers and you're eliminated from the
               round.
             </p>
-            <p className="mb-2">
+            <p className="mb-2 text-yellow-100">
               The last player standing gets 1 point. First to 3 points wins!
             </p>
-            <p className="font-medium mt-3">Challenge Feature:</p>
-            <p>
+            <p className="font-medium mt-3 text-yellow-300">Challenge Feature:</p>
+            <p className="text-yellow-100">
               Each player can issue one challenge per round to another player.
               The challenged player must name another valid item within 30
               seconds!
@@ -1037,7 +1536,7 @@ setSearchQuery(
           <div className="flex flex-col space-y-3">
             <button
               onClick={selectActorToMovies}
-              className="bg-blue-600 text-white py-3 px-4 rounded flex items-center justify-center"
+              className="bg-blue-600 text-white py-3 px-4 rounded-lg flex items-center justify-center shadow-md hover:bg-blue-700 transition-all"
             >
               <User size={18} className="mr-2" />
               Actor to Movies
@@ -1045,7 +1544,7 @@ setSearchQuery(
 
             <button
               onClick={selectMovieToActors}
-              className="bg-purple-600 text-white py-3 px-4 rounded flex items-center justify-center"
+              className="bg-purple-600 text-white py-3 px-4 rounded-lg flex items-center justify-center shadow-md hover:bg-purple-700 transition-all"
             >
               <Film size={18} className="mr-2" />
               Movie to Actors
@@ -1055,8 +1554,8 @@ setSearchQuery(
       )}
 
       {gameState === "setup" && (
-        <div className="w-full bg-white rounded-lg p-4 shadow mb-6">
-          <h2 className="text-lg font-bold mb-3">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+          <h2 className="text-lg font-bold mb-3 text-yellow-400">
             {gameMode === "actor_to_movies"
               ? "Select an Actor"
               : "Select a Movie"}
@@ -1083,7 +1582,7 @@ setSearchQuery(
                     ? "Search for an actor..."
                     : "Search for a movie..."
                 }
-                className="flex-grow p-2 border rounded-l"
+                className="flex-grow p-2 border rounded-l bg-gray-800 text-white border-gray-700"
               />
               <button
                 onClick={() => {
@@ -1092,17 +1591,28 @@ setSearchQuery(
                     performSearch(searchQuery);
                   }
                 }}
-                className="bg-gray-200 text-gray-800 py-2 px-3 rounded-r"
+                className="bg-yellow-600 text-white py-2 px-3 rounded-r hover:bg-yellow-700 transition-colors"
                 disabled={searchLoading}
               >
                 {searchLoading ? "..." : <Search size={18} />}
               </button>
             </div>
 
+            {/* Random selection buttons */}
+            <div className="flex mt-2 mb-3 space-x-2">
+              <button
+                onClick={gameMode === "actor_to_movies" ? fetchRandomActor : fetchRandomMovie}
+                className="flex-1 bg-green-600 text-white py-2 px-3 rounded flex items-center justify-center hover:bg-green-700 transition-colors"
+              >
+                <Shuffle size={16} className="mr-1" />
+                {gameMode === "actor_to_movies" ? "Random Actor" : "Random Movie"}
+              </button>
+            </div>
+
             {showDropdown && searchResults.length > 0 && (
-              <div className="absolute w-full bg-white border rounded shadow-lg max-h-64 overflow-y-auto z-10 mt-1">
+              <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-10 mt-1">
                 {searchQuery.trim().length === 0 && (
-                  <div className="p-2 bg-gray-100 text-sm font-medium border-b">
+                  <div className="p-2 bg-gray-700 text-sm font-medium border-b border-gray-600 text-yellow-300">
                     {gameMode === "actor_to_movies"
                       ? "Popular Actors"
                       : "Popular Movies"}
@@ -1113,35 +1623,37 @@ setSearchQuery(
                   <div
                     key={item.id}
                     onClick={() => selectSearchResult(item)}
-                    className="flex items-center p-2 hover:bg-gray-100 cursor-pointer border-b"
+                    className="flex items-center p-2 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
                   >
-                    <img
-                      src={
-                        gameMode === "actor_to_movies"
-                          ? (item as PersonResult).profile_path
-                          : (item as MovieResult).poster_path
-                      }
-                      alt={
-                        gameMode === "actor_to_movies"
-                          ? (item as PersonResult).name
-                          : (item as MovieResult).title
-                      }
-                      className="w-12 h-16 object-cover rounded mr-3"
-                    />
+                    <div className="w-12 h-16 bg-gray-900 rounded mr-3 overflow-hidden">
+                      <img
+                        src={
+                          gameMode === "actor_to_movies"
+                            ? item.profile_path
+                            : item.poster_path
+                        }
+                        alt={
+                          gameMode === "actor_to_movies"
+                            ? item.name
+                            : item.title
+                        }
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <div>
-                      <div className="font-medium">
+                      <div className="font-medium text-white">
                         {gameMode === "actor_to_movies"
-                          ? (item as PersonResult).name
-                          : (item as MovieResult).title}
+                          ? item.name
+                          : item.title}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-400">
                         {gameMode === "actor_to_movies"
                           ? `Known for: ${
-                              (item as PersonResult).known_for_department || "Acting"
+                              item.known_for_department || "Acting"
                             }`
                           : `Released: ${
-                              (item as MovieResult).release_date
-                                ? new Date((item as MovieResult).release_date || "").getFullYear()
+                              item.release_date
+                                ? new Date(item.release_date || "").getFullYear()
                                 : "Unknown"
                             }`}
                       </div>
@@ -1151,7 +1663,7 @@ setSearchQuery(
 
                 {searchResults.length === 0 &&
                   searchQuery.trim().length > 0 && (
-                    <div className="p-3 text-center text-gray-500">
+                    <div className="p-3 text-center text-gray-400">
                       No results found for "{searchQuery}"
                     </div>
                   )}
@@ -1160,30 +1672,32 @@ setSearchQuery(
           </div>
 
           {selectedItem && (
-            <div className="flex items-center mb-4 bg-gray-100 p-3 rounded-lg w-full">
-              <img
-                src={
-                  gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).profile_path
-                    : (selectedItem as MovieDetails).poster_path
-                }
-                alt={
-                  gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
-                }
-                className="w-16 h-20 object-cover rounded mr-3"
-              />
+            <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
+              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
+                <img
+                  src={
+                    gameMode === "actor_to_movies"
+                      ? selectedItem.profile_path
+                      : selectedItem.poster_path
+                  }
+                  alt={
+                    gameMode === "actor_to_movies"
+                      ? selectedItem.name 
+                      : selectedItem.title
+                  }
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div>
-                <div className="font-bold text-lg">
+                <div className="font-bold text-lg text-yellow-300">
                   {gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
+                    ? selectedItem.name
+                    : selectedItem.title}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-300">
                   {gameMode === "actor_to_movies"
-                    ? `${(selectedItem as PersonDetails).movies.length} movies found for this actor`
-                    : `${(selectedItem as MovieDetails).actors.length} actors found in this movie`}
+                    ? `${selectedItem.movies?.length || 0} movies found for this actor`
+                    : `${selectedItem.actors?.length || 0} actors found in this movie`}
                 </div>
               </div>
             </div>
@@ -1193,8 +1707,8 @@ setSearchQuery(
             <div
               className={`mb-4 p-2 rounded text-sm ${
                 validationResult.valid
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
+                  ? "bg-green-900 text-green-200 border border-green-500"
+                  : "bg-red-900 text-red-200 border border-red-500"
               }`}
             >
               {validationResult.message}
@@ -1204,7 +1718,7 @@ setSearchQuery(
           <div className="flex justify-between">
             <button
               onClick={startNewRound}
-              className="bg-gray-300 text-gray-800 py-2 px-4 rounded"
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
             >
               Back
             </button>
@@ -1212,7 +1726,7 @@ setSearchQuery(
             <button
               onClick={startGame}
               disabled={!selectedItem}
-              className="bg-green-600 text-white py-2 px-4 rounded disabled:bg-gray-400 flex items-center"
+              className="bg-green-600 text-white py-2 px-4 rounded disabled:bg-gray-600 flex items-center hover:bg-green-700 transition-colors disabled:hover:bg-gray-600"
             >
               <Play size={18} className="mr-2" />
               Start Game
@@ -1222,29 +1736,31 @@ setSearchQuery(
       )}
 
       {(gameState === "playing" || gameState === "challenge") && selectedItem && (
-        <div className="w-full bg-white rounded-lg p-4 shadow mb-6">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
           {/* Selected item display */}
-          <div className="flex items-center mb-4 bg-gray-100 p-3 rounded-lg w-full">
-            <img
-              src={
-                gameMode === "actor_to_movies"
-                  ? (selectedItem as PersonDetails).profile_path
-                  : (selectedItem as MovieDetails).poster_path
-              }
-              alt={
-                gameMode === "actor_to_movies"
-                  ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                  : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
-              }
-              className="w-16 h-20 object-cover rounded mr-3"
-            />
+          <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
+            <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
+              <img
+                src={
+                  gameMode === "actor_to_movies"
+                    ? selectedItem.profile_path
+                    : selectedItem.poster_path
+                }
+                alt={
+                  gameMode === "actor_to_movies"
+                    ? selectedItem.name
+                    : selectedItem.title
+                }
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="flex-grow">
-              <div className="font-bold text-lg">
+              <div className="font-bold text-lg text-yellow-300">
                 {gameMode === "actor_to_movies"
-                  ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                  : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
+                  ? selectedItem.name
+                  : selectedItem.title}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-300">
                 {gameMode === "actor_to_movies"
                   ? "Name a movie starring this actor"
                   : "Name an actor in this movie"}
@@ -1260,10 +1776,12 @@ setSearchQuery(
               {gameState === "challenge" ? (
                 <>
                   <Flag size={18} className="mr-2" /> Challenge!{" "}
-                  {currentPlayer.name}'s Turn
+                  <span className="ml-1">{currentPlayer.character} {currentPlayer.name}'s Turn</span>
                 </>
               ) : (
-                <>{currentPlayer.name}'s Turn</>
+                <>
+                  <span>{currentPlayer.character} {currentPlayer.name}'s Turn</span>
+                </>
               )}
             </h3>
             <div className="flex justify-between items-center mt-1">
@@ -1280,7 +1798,7 @@ setSearchQuery(
                   <span
                     key={i}
                     className={`inline-block w-3 h-3 rounded-full mx-px ${
-                      i < (consecutiveWrongs[currentPlayerIndex] as number)
+                      i < (consecutiveWrongs[currentPlayerIndex])
                         ? "bg-red-300"
                         : "bg-white bg-opacity-30"
                     }`}
@@ -1289,41 +1807,51 @@ setSearchQuery(
               </div>
             </div>
           </div>
-{/* Challenge status feedback */}
-{gameState === "challenge" && challengeStatus && (
-  <div 
-    className={`p-3 mb-4 rounded-lg text-white flex items-center justify-center ${
-      challengeStatus === "success" ? "bg-green-600" : "bg-red-600"
-    }`}
-  >
-    {challengeStatus === "success" ? (
-      <>
-        <Check size={18} className="mr-2" />
-        Challenge Successful! Moving to next player...
-      </>
-    ) : (
-      <>
-        <X size={18} className="mr-2" />
-        Challenge Failed! Moving to next player...
-      </>
-    )}
-  </div>
-)}
+
+          {/* Challenge status feedback */}
+          {gameState === "challenge" && challengeStatus && (
+            <div 
+              className={`p-3 mb-4 rounded-lg text-white flex items-center justify-center ${
+                challengeStatus === "success" ? "bg-green-600" : "bg-red-600"
+              }`}
+            >
+              {challengeStatus === "success" ? (
+                <>
+                  <Check size={18} className="mr-2" />
+                  Challenge Successful! Moving to next player...
+                </>
+              ) : (
+                <>
+                  <X size={18} className="mr-2" />
+                  Challenge Failed! Moving to next player...
+                </>
+              )}
+            </div>
+          )}
+
           {/* Timer */}
           <div className="flex justify-between mb-4">
             <div className="flex items-center">
-              <Clock size={20} className="mr-2" />
+              <Clock size={20} className="mr-2 text-yellow-400" />
               <div
-                className={`font-bold ${countdown <= 10 ? "text-red-500" : ""}`}
+                className={`font-bold ${countdown <= 10 ? "text-red-500" : "text-yellow-300"}`}
               >
                 {countdown}s
               </div>
             </div>
 
             {/* Items named count */}
-            <div className="text-sm font-medium">
+            <div className="text-sm font-medium text-yellow-300">
               Items named: {namedItems.length}
             </div>
+          </div>
+
+          {/* Timer progress bar */}
+          <div className="w-full h-2 bg-gray-700 rounded-full mb-4 overflow-hidden">
+            <div 
+              className={`h-full ${countdown <= 10 ? 'bg-red-500' : 'bg-yellow-500'} rounded-full timer-bar`}
+              style={{ width: `${(countdown / 30) * 100}%` }}
+            ></div>
           </div>
 
           {/* Input area */}
@@ -1334,10 +1862,10 @@ setSearchQuery(
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className={`flex-grow p-2 border rounded-l ${
+                className={`flex-grow p-2 border rounded-l bg-gray-800 text-white ${
                   validationResult && !validationResult.valid
                     ? "border-red-500"
-                    : ""
+                    : "border-gray-700"
                 }`}
                 placeholder={
                   gameMode === "actor_to_movies"
@@ -1347,7 +1875,7 @@ setSearchQuery(
               />
               <button
                 onClick={validateInput}
-                className="bg-blue-600 text-white py-2 px-4 rounded-r"
+                className="bg-blue-600 text-white py-2 px-4 rounded-r hover:bg-blue-700 transition-colors"
               >
                 Submit
               </button>
@@ -1357,8 +1885,8 @@ setSearchQuery(
               <div
                 className={`mt-2 p-2 rounded text-sm ${
                   validationResult.valid
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
+                    ? "bg-green-900 text-green-200 border border-green-500"
+                    : "bg-red-900 text-red-200 border border-red-500"
                 }`}
               >
                 {validationResult.message}
@@ -1366,24 +1894,20 @@ setSearchQuery(
             )}
 
             {showDidYouMean && (
-              <div className="mt-2 p-3 rounded bg-yellow-100 border border-yellow-300">
-                <p className="font-medium mb-2">
-                  Did you mean:{" "}
-                  <span className="font-bold">{didYouMeanSuggestion}</span>?
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
+              <div className="mt-2 p-3 rounded bg-yellow-900 border border-yellow-500">
+                <p className="text-sm text-yellow-200 mb-2">
                   Your entry: "{inputValue}"
                 </p>
                 <div className="flex space-x-2">
                   <button
                     onClick={acceptSuggestion}
-                    className="bg-green-500 text-white py-1 px-3 rounded flex items-center"
+                    className="bg-green-500 text-white py-1 px-3 rounded flex items-center hover:bg-green-600 transition-colors"
                   >
                     <Check size={16} className="mr-1" /> Yes
                   </button>
                   <button
                     onClick={rejectSuggestion}
-                    className="bg-red-500 text-white py-1 px-3 rounded flex items-center"
+                    className="bg-red-500 text-white py-1 px-3 rounded flex items-center hover:bg-red-600 transition-colors"
                   >
                     <X size={16} className="mr-1" /> No
                   </button>
@@ -1395,31 +1919,31 @@ setSearchQuery(
           {/* Challenge buttons */}
           {gameState === "playing" && (
             <div className="mb-4">
-              <p className="text-sm font-medium mb-2">Challenge a player:</p>
+              <p className="text-sm font-medium mb-2 text-yellow-300">Challenge a player:</p>
               <div className="flex space-x-2">
                 {players.map(
                   (player, index) =>
                     index !== currentPlayerIndex &&
-                    !(eliminatedPlayers[index] as boolean) && (
+                    !(eliminatedPlayers[index]) && (
                       <button
                         key={player.id}
                         onClick={() => issueChallenge(index)}
                         disabled={currentPlayer.challengesLeft <= 0}
                         className={`px-2 py-1 rounded text-sm ${
                           currentPlayer.challengesLeft > 0
-                            ? `${player.color} text-white`
-                            : "bg-gray-300 text-gray-500"
+                            ? `${player.color} text-white hover:opacity-90 transition-colors`
+                            : "bg-gray-700 text-gray-500"
                         }`}
                       >
                         <div className="flex items-center">
                           <Flag size={12} className="mr-1" />
-                          {player.name}
+                          {player.character} {player.name}
                         </div>
                       </button>
                     )
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-yellow-200 mt-1">
                 Challenges left: {currentPlayer.challengesLeft}/1
               </p>
             </div>
@@ -1427,16 +1951,16 @@ setSearchQuery(
 
           {/* Items named */}
           <div>
-            <p className="font-medium mb-2">Items named:</p>
-            <div className="max-h-32 overflow-y-auto bg-gray-100 p-2 rounded">
+            <p className="font-medium mb-2 text-yellow-300">Items named:</p>
+            <div className="max-h-32 overflow-y-auto bg-gray-800 p-2 rounded border border-gray-700">
               {namedItems.length > 0 ? (
                 <ul className="grid grid-cols-2 gap-1">
                   {namedItems.map((item, index) => (
-                    <li key={index} className="flex items-center text-sm">
+                    <li key={index} className="flex items-center text-sm text-gray-200">
                       {gameMode === "actor_to_movies" ? (
-                        <Film size={14} className="mr-1 flex-shrink-0" />
+                        <Film size={14} className="mr-1 flex-shrink-0 text-yellow-400" />
                       ) : (
-                        <User size={14} className="mr-1 flex-shrink-0" />
+                        <User size={14} className="mr-1 flex-shrink-0 text-yellow-400" />
                       )}
                       <span className="truncate">{item}</span>
                     </li>
@@ -1453,44 +1977,46 @@ setSearchQuery(
       )}
 
       {gameState === "roundEnd" && !winner && (
-        <div className="w-full bg-white rounded-lg p-4 shadow mb-6">
-          <h2 className="text-lg font-bold mb-3 text-center">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+          <h2 className="text-lg font-bold mb-3 text-center text-yellow-400">
             Round Complete!
           </h2>
 
           {lastCorrectPlayerIndex !== null && (
-            <div className="mb-4 p-3 bg-green-100 rounded-lg text-center">
-              <p className="font-medium">
-                {players[lastCorrectPlayerIndex].name} wins this round!
+            <div className="mb-4 p-3 bg-green-900 rounded-lg text-center border border-green-600">
+              <p className="font-medium text-green-200">
+                {players[lastCorrectPlayerIndex].character} {players[lastCorrectPlayerIndex].name} wins this round!
               </p>
-              <p className="text-sm mt-1">
+              <p className="text-sm mt-1 text-green-300">
                 +1 point awarded. First to 3 points wins!
               </p>
             </div>
           )}
 
           {selectedItem && (
-            <div className="flex items-center mb-4 bg-gray-100 p-3 rounded-lg w-full">
-              <img
-                src={
-                  gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).profile_path
-                    : (selectedItem as MovieDetails).poster_path
-                }
-                alt={
-                  gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
-                }
-                className="w-16 h-20 object-cover rounded mr-3"
-              />
+            <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
+              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
+                <img
+                  src={
+                    gameMode === "actor_to_movies"
+                      ? selectedItem.profile_path
+                      : selectedItem.poster_path
+                  }
+                  alt={
+                    gameMode === "actor_to_movies"
+                      ? selectedItem.name
+                      : selectedItem.title
+                  }
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div>
-                <div className="font-bold text-lg">
+                <div className="font-bold text-lg text-yellow-300">
                   {gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
+                    ? selectedItem.name
+                    : selectedItem.title}
                 </div>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-sm text-gray-300 mb-2">
                   {namedItems.length} items named
                 </div>
                 <div className="flex space-x-3">
@@ -1499,7 +2025,7 @@ setSearchQuery(
                       <div
                         className={`w-3 h-3 rounded-full ${player.color} mr-1`}
                       ></div>
-                      {player.score}
+                      <span className="text-white">{player.score}</span>
                     </div>
                   ))}
                 </div>
@@ -1510,14 +2036,14 @@ setSearchQuery(
           <div className="flex justify-between">
             <button
               onClick={resetGame}
-              className="bg-gray-300 text-gray-800 py-2 px-4 rounded"
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
             >
               Reset Game
             </button>
 
             <button
               onClick={startNewRound}
-              className="bg-blue-600 text-white py-2 px-4 rounded"
+              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
             >
               Next Round
             </button>
@@ -1526,25 +2052,25 @@ setSearchQuery(
       )}
 
       {(gameState === "gameOver" || winner) && winner && (
-        <div className="w-full bg-white rounded-lg p-6 shadow mb-6 text-center">
-          <h2 className="text-xl font-bold mb-3">Game Over!</h2>
+        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 text-center border-2 border-yellow-500 z-30">
+          <h2 className="text-xl font-bold mb-3 text-yellow-400">Game Over!</h2>
 
           <div className={`p-4 rounded-lg mb-6 ${winner.color} text-white`}>
-            <div className="text-3xl font-bold mb-1">{winner.name} Wins!</div>
+            <div className="text-3xl font-bold mb-1">{winner.character} {winner.name} Wins!</div>
             <div className="text-sm">First to reach 3 points</div>
           </div>
 
           <div className="mb-6">
-            <h3 className="font-bold mb-2">Final Scores:</h3>
+            <h3 className="font-bold mb-2 text-yellow-300">Final Scores:</h3>
             <div className="flex justify-around">
               {players.map((player) => (
                 <div key={player.id} className="text-center">
                   <div
-                    className={`w-8 h-8 rounded-full ${player.color} mx-auto mb-1 flex items-center justify-center text-white font-bold`}
+                    className={`w-10 h-10 rounded-full ${player.color} mx-auto mb-1 flex items-center justify-center text-white font-bold`}
                   >
                     {player.score}
                   </div>
-                  <div className="text-sm">{player.name}</div>
+                  <div className="text-sm text-yellow-100">{player.character} {player.name}</div>
                 </div>
               ))}
             </div>
@@ -1552,7 +2078,7 @@ setSearchQuery(
 
           <button
             onClick={resetGame}
-            className="bg-blue-600 text-white py-2 px-4 rounded w-full"
+            className="bg-blue-600 text-white py-2 px-4 rounded w-full hover:bg-blue-700 transition-colors"
           >
             Play Again
           </button>
@@ -1560,11 +2086,11 @@ setSearchQuery(
       )}
 
       {/* Footer */}
-      <div className="text-center text-xs text-gray-500 mt-2">
-        <p>MovieMatch Game - Developed by Will Thornton & Claude </p>
+      <div className="text-center text-xs text-yellow-200 mt-2 z-30">
+        <p>MovieMatch Game - Developed by Will Thornton & Claude</p>
         <p>
           Data provided by{" "}
-          <a href="https://www.themoviedb.org" className="text-blue-500">
+          <a href="https://www.themoviedb.org" className="text-yellow-400 hover:underline">
             TMDB
           </a>
         </p>
@@ -1573,4 +2099,8 @@ setSearchQuery(
   );
 };
 
-export default MovieMatch;
+export default MovieMatch;font-medium mb-2 text-yellow-200">
+                  Did you mean:{" "}
+                  <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>?
+                </p>
+                <p className="

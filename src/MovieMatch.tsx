@@ -125,18 +125,7 @@ const MovieMatch = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
   const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState<number | null>(null);
   const [challengedPlayerIndex, setChallengedPlayerIndex] = useState<number | null>(null);
-  // Note: This variable is used in the UI conditionally
   const [challengeStatus, setChallengeStatus] = useState<"success" | "failed" | null>(null);
-  const [consecutiveWrongs, setConsecutiveWrongs] = useState<PlayerMap>({
-    0: 0,
-    1: 0,
-    2: 0,
-  });
-  const [eliminatedPlayers, setEliminatedPlayers] = useState<PlayerMap>({
-    0: false,
-    1: false,
-    2: false,
-  });
   const [consecutiveWrongs, setConsecutiveWrongs] = useState<PlayerMap>({
     0: 0,
     1: 0,
@@ -1178,8 +1167,8 @@ const MovieMatch = () => {
                 }
                 alt={
                   gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).name
-                    : (selectedItem as MovieDetails).title
+                    ? "name" in selectedItem ? selectedItem.name : ""
+                    : "title" in selectedItem ? selectedItem.title : ""
                 }
                 className="w-16 h-20 object-cover rounded mr-3"
               />
@@ -1251,8 +1240,8 @@ const MovieMatch = () => {
               <div className="font-bold text-lg">
                 {gameMode === "actor_to_movies"
                   ? "name" in selectedItem ? selectedItem.name : ""
-                  : "title" in selectedItem ? selectedItem.title : ""
-              }
+                  : "title" in selectedItem ? selectedItem.title : ""}
+              </div>
               <div className="text-sm text-gray-600">
                 {gameMode === "actor_to_movies"
                   ? "Name a movie starring this actor"

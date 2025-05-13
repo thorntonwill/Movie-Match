@@ -745,8 +745,9 @@ const MovieMatch = () => {
       }
 
       setSelectedItem(detailedItem);
-      setSearchQuery(
-        gameMode === "actor_to_movies" ? detailedItem.name : detailedItem.title
+    setSearchQuery(
+      "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+      : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
       );
       setShowDropdown(false);
     } catch (error) {
@@ -1167,16 +1168,16 @@ const MovieMatch = () => {
                 }
                 alt={
                   gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? selectedItem.name : ""
-                    : "title" in selectedItem ? selectedItem.title : ""
+                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
                 }
                 className="w-16 h-20 object-cover rounded mr-3"
               />
               <div>
                 <div className="font-bold text-lg">
                   {gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? selectedItem.name : ""
-                    : "title" in selectedItem ? selectedItem.title : ""}
+                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
                 </div>
                 <div className="text-sm text-gray-600">
                   {gameMode === "actor_to_movies"
@@ -1231,16 +1232,16 @@ const MovieMatch = () => {
               }
               alt={
                 gameMode === "actor_to_movies"
-                  ? "name" in selectedItem ? selectedItem.name : ""
-                  : "title" in selectedItem ? selectedItem.title : ""
+                  ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                  : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
               }
               className="w-16 h-20 object-cover rounded mr-3"
             />
             <div className="flex-grow">
               <div className="font-bold text-lg">
                 {gameMode === "actor_to_movies"
-                  ? "name" in selectedItem ? selectedItem.name : ""
-                  : "title" in selectedItem ? selectedItem.title : ""}
+                  ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                  : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
               </div>
               <div className="text-sm text-gray-600">
                 {gameMode === "actor_to_movies"
@@ -1287,7 +1288,26 @@ const MovieMatch = () => {
               </div>
             </div>
           </div>
-
+{/* Challenge status feedback */}
+{gameState === "challenge" && challengeStatus && (
+  <div 
+    className={`p-3 mb-4 rounded-lg text-white flex items-center justify-center ${
+      challengeStatus === "success" ? "bg-green-600" : "bg-red-600"
+    }`}
+  >
+    {challengeStatus === "success" ? (
+      <>
+        <Check size={18} className="mr-2" />
+        Challenge Successful! Moving to next player...
+      </>
+    ) : (
+      <>
+        <X size={18} className="mr-2" />
+        Challenge Failed! Moving to next player...
+      </>
+    )}
+  </div>
+)}
           {/* Timer */}
           <div className="flex justify-between mb-4">
             <div className="flex items-center">
@@ -1458,16 +1478,16 @@ const MovieMatch = () => {
                 }
                 alt={
                   gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? selectedItem.name : ""
-                    : "title" in selectedItem ? selectedItem.title : ""
+                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
                 }
                 className="w-16 h-20 object-cover rounded mr-3"
               />
               <div>
                 <div className="font-bold text-lg">
                   {gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? selectedItem.name : ""
-                    : "title" in selectedItem ? selectedItem.title : ""}
+                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
+                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
                 </div>
                 <div className="text-sm text-gray-600 mb-2">
                   {namedItems.length} items named

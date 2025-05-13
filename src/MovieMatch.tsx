@@ -65,6 +65,9 @@ interface PlayerMap {
   [key: number]: number | boolean;
 }
 
+// Custom timeout type for browser environment
+type TimeoutRef = ReturnType<typeof setTimeout> | null;
+
 const MovieMatch = () => {
   // Constants
   const TMDB_API_KEY = "70581b465aebaba2ea66f7cd14976460";
@@ -93,7 +96,7 @@ const MovieMatch = () => {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // Store timeout ID to properly clear it
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<TimeoutRef>(null);
 
   // Player states
   const [players, setPlayers] = useState<Player[]>([
@@ -122,7 +125,8 @@ const MovieMatch = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
   const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState<number | null>(null);
   const [challengedPlayerIndex, setChallengedPlayerIndex] = useState<number | null>(null);
-  const [challengeStatus, setChallengeStatus] = useState<string | null>(null);
+  // Note: This variable is used in the UI conditionally
+  const [challengeStatus, setChallengeStatus] = useState<"success" | "failed" | null>(null);
   const [consecutiveWrongs, setConsecutiveWrongs] = useState<PlayerMap>({
     0: 0,
     1: 0,
@@ -1172,8 +1176,8 @@ const MovieMatch = () => {
               <div>
                 <div className="font-bold text-lg">
                   {gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).name
-                    : (selectedItem as MovieDetails).title}
+                    ? "name" in selectedItem ? selectedItem.name : ""
+                    : "title" in selectedItem ? selectedItem.title : ""}
                 </div>
                 <div className="text-sm text-gray-600">
                   {gameMode === "actor_to_movies"
@@ -1228,16 +1232,16 @@ const MovieMatch = () => {
               }
               alt={
                 gameMode === "actor_to_movies"
-                  ? (selectedItem as PersonDetails).name
-                  : (selectedItem as MovieDetails).title
+                  ? "name" in selectedItem ? selectedItem.name : ""
+                  : "title" in selectedItem ? selectedItem.title : ""
               }
               className="w-16 h-20 object-cover rounded mr-3"
             />
             <div className="flex-grow">
               <div className="font-bold text-lg">
                 {gameMode === "actor_to_movies"
-                  ? (selectedItem as PersonDetails).name
-                  : (selectedItem as MovieDetails).title}
+                  ? "name" in selectedItem ? selectedItem.name : ""
+                  : "title" in selectedItem ? selectedItem.title : ""
               </div>
               <div className="text-sm text-gray-600">
                 {gameMode === "actor_to_movies"
@@ -1455,16 +1459,16 @@ const MovieMatch = () => {
                 }
                 alt={
                   gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).name
-                    : (selectedItem as MovieDetails).title
+                    ? "name" in selectedItem ? selectedItem.name : ""
+                    : "title" in selectedItem ? selectedItem.title : ""
                 }
                 className="w-16 h-20 object-cover rounded mr-3"
               />
               <div>
                 <div className="font-bold text-lg">
                   {gameMode === "actor_to_movies"
-                    ? (selectedItem as PersonDetails).name
-                    : (selectedItem as MovieDetails).title}
+                    ? "name" in selectedItem ? selectedItem.name : ""
+                    : "title" in selectedItem ? selectedItem.title : ""}
                 </div>
                 <div className="text-sm text-gray-600 mb-2">
                   {namedItems.length} items named

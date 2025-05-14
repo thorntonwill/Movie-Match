@@ -2098,7 +2098,6 @@ const MovieMatch = () => {
     </div>
   );
 };
-
 export default function MovieMatch() {
   return (
     <>
@@ -2106,7 +2105,7 @@ export default function MovieMatch() {
         Did you mean:{" "}
       </p>
       <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>
-      <p className="">
+      <p className=""></p>
     </>
   );
 }

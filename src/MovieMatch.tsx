@@ -1903,7 +1903,7 @@ const MovieMatch = () => {
 
       {/* Footer */}
       <div className="text-center text-xs text-yellow-200 mt-2 z-30">
-        <p>MovieMatch Game - Developed by Will Thornton & Claude</p>
+        <p>Denver Labs 2025</p>
         <p>
           Data provided by{" "}
           <a href="https://www.themoviedb.org" className="text-yellow-400 hover:underline">

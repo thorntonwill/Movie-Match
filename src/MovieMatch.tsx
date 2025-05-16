@@ -1,184 +1,4 @@
-{gameState === "setup" && (
-        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
-          <h2 className="text-lg font-bold mb-3 text-yellow-400">
-            {gameMode === "actor_to_movies"
-              ? "Select an Actor"
-              : "Select a Movie"}
-          </h2>
-
-          <div className="relative mb-4" ref={dropdownRef}>
-            <div className="flex w-full">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => {
-                  setShowDropdown(true);
-                  if (!searchQuery.trim()) {
-                    if (gameMode === "actor_to_movies") {
-                      fetchPopularPeople();
-                    } else {
-                      fetchPopularMovies();
-                    }
-                  }
-                }}
-                placeholder={
-                  gameMode === "actor_to_movies"
-                    ? "Search for an actor..."
-                    : "Search for a movie..."
-                }
-                className="flex-grow p-2 border rounded-l bg-gray-800 text-white border-gray-700"
-              />
-              <button
-                onClick={() => {
-                  setShowDropdown(!showDropdown);
-                  if (!showDropdown) {
-                    performSearch(searchQuery);
-                  }
-                }}
-                className="bg-yellow-600 text-white py-2 px-3 rounded-r hover:bg-yellow-700 transition-colors"
-                disabled={searchLoading}
-              >
-                {searchLoading ? "..." : <Search size={18} />}
-              </button>
-            </div>
-
-            {/* Random selection buttons */}
-            <div className="flex mt-2 mb-3 space-x-2">
-              <button
-                onClick={gameMode === "actor_to_movies" ? fetchRandomActor : fetchRandomMovie}
-                className="flex-1 bg-green-600 text-white py-2 px-3 rounded flex items-center justify-center hover:bg-green-700 transition-colors"
-              >
-                <Shuffle size={16} className="mr-1" />
-                {gameMode === "actor_to_movies" ? "Random Actor" : "Random Movie"}
-              </button>
-            </div>
-
-            {showDropdown && searchResults.length > 0 && (
-              <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-10 mt-1">
-                {searchQuery.trim().length === 0 && (
-                  <div className="p-2 bg-gray-700 text-sm font-medium border-b border-gray-600 text-yellow-300">
-                    {gameMode === "actor_to_movies"
-                      ? "Popular Actors"
-                      : "Popular Movies"}
-                  </div>
-                )}
-
-                {searchResults.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => selectSearchResult(item)}
-                    className="flex items-center p-2 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
-                  >
-                    <div className="w-12 h-16 bg-gray-900 rounded mr-3 overflow-hidden">
-                      <img
-                        src={
-                          gameMode === "actor_to_movies"
-                            ? (item as PersonResult).profile_path
-                            : (item as MovieResult).poster_path
-                        }
-                        alt={
-                          gameMode === "actor_to_movies"
-                            ? (item as PersonResult).name
-                            : (item as MovieResult).title
-                        }
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium text-white">
-                        {gameMode === "actor_to_movies"
-                          ? (item as PersonResult).name
-                          : (item as MovieResult).title}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {gameMode === "actor_to_movies"
-                          ? `Known for: ${
-                              (item as PersonResult).known_for_department || "Acting"
-                            }`
-                          : `Released: ${
-                              (item as MovieResult).release_date
-                                ? new Date((item as MovieResult).release_date || "").getFullYear()
-                                : "Unknown"
-                            }`}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {searchResults.length === 0 &&
-                  searchQuery.trim().length > 0 && (
-                    <div className="p-3 text-center text-gray-400">
-                      No results found for "{searchQuery}"
-                    </div>
-                  )}
-              </div>
-            )}
-          </div>
-
-          {selectedItem && (
-            <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
-              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
-                <img
-                  src={
-                    gameMode === "actor_to_movies"
-                      ? (selectedItem as PersonDetails).profile_path
-                      : (selectedItem as MovieDetails).poster_path
-                  }
-                  alt={
-                    gameMode === "actor_to_movies"
-                      ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                      : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""
-                  }
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <div className="font-bold text-lg text-yellow-300">
-                  {gameMode === "actor_to_movies"
-                    ? "name" in selectedItem ? (selectedItem as PersonDetails).name : ""
-                    : "title" in selectedItem ? (selectedItem as MovieDetails).title : ""}
-                </div>
-                <div className="text-sm text-gray-300">
-                  {gameMode === "actor_to_movies"
-                    ? `${(selectedItem as PersonDetails).movies.length} movies found for this actor`
-                    : `${(selectedItem as MovieDetails).actors.length} actors found in this movie`}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {validationResult && (
-            <div
-              className={`mb-4 p-2 rounded text-sm ${
-                validationResult.valid
-                  ? "bg-green-900 text-green-200 border border-green-500"
-                  : "bg-red-900 text-red-200 border border-red-500"
-              }`}
-            >
-              {validationResult.message}
-            </div>
-          )}
-
-          <div className="flex justify-between">
-            <button
-              onClick={startNewRound}
-              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-600 transition-colors"
-            >
-              Back
-            </button>
-
-            <button
-              onClick={startGame}
-              disabled={!selectedItem}
-              className="bg-green-600 text-white py-2 px-4 rounded disabled:bg-gray-600 flex items-center hover:bg-green-700 transition-colors disabled:hover:bg-gray-600"
-            >
-              <Play size={18} className="mr-2" />
-              Start Game
-            </button>
-          </div>
-        </div>
-      )}import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Clock,
   Search,
@@ -393,14 +213,14 @@ const MovieMatch = () => {
   const [curtainsOpen, setCurtainsOpen] = useState<boolean>(false);
 
   // Dropdown state
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // Store timeout ID to properly clear it
-  const timerRef = useRef(null);
+  const timerRef = useRef<TimeoutRef>(null);
 
   // Player states
-  const [players, setPlayers] = useState([
+  const [players, setPlayers] = useState<Player[]>([
     {
       id: 1,
       name: "Player 1",
@@ -426,16 +246,16 @@ const MovieMatch = () => {
       character: "🎭"
     },
   ]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState(null);
-  const [challengedPlayerIndex, setChallengedPlayerIndex] = useState(null);
-  const [challengeStatus, setChallengeStatus] = useState(null);
-  const [consecutiveWrongs, setConsecutiveWrongs] = useState({
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
+  const [lastCorrectPlayerIndex, setLastCorrectPlayerIndex] = useState<number | null>(null);
+  const [challengedPlayerIndex, setChallengedPlayerIndex] = useState<number | null>(null);
+  const [challengeStatus, setChallengeStatus] = useState<"success" | "failed" | null>(null);
+  const [consecutiveWrongs, setConsecutiveWrongs] = useState<Record<number, number>>({
     0: 0,
     1: 0,
     2: 0,
   });
-  const [eliminatedPlayers, setEliminatedPlayers] = useState({
+  const [eliminatedPlayers, setEliminatedPlayers] = useState<Record<number, boolean>>({
     0: false,
     1: false,
     2: false,
@@ -455,7 +275,7 @@ const MovieMatch = () => {
 
   // Handle outside clicks for dropdown
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && event.target instanceof Node && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
@@ -500,7 +320,7 @@ const MovieMatch = () => {
 
   // Effect for animations
   useEffect(() => {
-    let timeout = null;
+    let timeout: TimeoutRef = null;
     if (showEffect) {
       timeout = setTimeout(() => {
         setShowEffect(false);
@@ -514,7 +334,7 @@ const MovieMatch = () => {
 
   // Bounce effect for character
   useEffect(() => {
-    let timeout = null;
+    let timeout: TimeoutRef = null;
     if (bounceCharacter !== null) {
       timeout = setTimeout(() => {
         setBounceCharacter(null);
@@ -527,7 +347,7 @@ const MovieMatch = () => {
   }, [bounceCharacter]);
 
   // Levenshtein distance algorithm for fuzzy matching
-  const levenshteinDistance = (str1, str2) => {
+  const levenshteinDistance = (str1: string, str2: string): number => {
     const track = Array(str2.length + 1)
       .fill(null)
       .map(() => Array(str1.length + 1).fill(null));
@@ -555,7 +375,7 @@ const MovieMatch = () => {
   };
 
   // Find close matches for "Did you mean?" feature
-  const findCloseMatch = (input, validOptions) => {
+  const findCloseMatch = (input: string, validOptions: string[]): string | null => {
     if (!input || input.length < 2) return null;
 
     const lowerInput = input.toLowerCase();
@@ -573,7 +393,7 @@ const MovieMatch = () => {
       return substringMatches[0];
     }
 
-    let bestMatch = null;
+    let bestMatch: string | null = null;
     let bestDistance = Infinity;
 
     for (const option of validOptions) {
@@ -598,7 +418,7 @@ const MovieMatch = () => {
   };
 
   // API search function
-  const performSearch = async (query) => {
+  const performSearch = async (query: string): Promise<void> => {
     if (!query.trim() && gameState === "setup") {
       if (gameMode === "actor_to_movies") {
         fetchPopularPeople();
@@ -704,7 +524,7 @@ const MovieMatch = () => {
   };
 
   // Fetch popular people
-  const fetchPopularPeople = async () => {
+  const fetchPopularPeople = async (): Promise<void> => {
     setSearchLoading(true);
     try {
       const response = await fetch(
@@ -715,7 +535,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const peopleWithBasicInfo = data.results.slice(0, 6).map((person) => ({
+      const peopleWithBasicInfo = data.results.slice(0, 6).map((person: any) => ({
         ...person,
         profile_path: person.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
@@ -734,7 +554,7 @@ const MovieMatch = () => {
   };
 
   // Fetch popular movies
-  const fetchPopularMovies = async () => {
+  const fetchPopularMovies = async (): Promise<void> => {
     setSearchLoading(true);
     try {
       const response = await fetch(
@@ -745,7 +565,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const moviesWithBasicInfo = data.results.slice(0, 6).map((movie) => ({
+      const moviesWithBasicInfo = data.results.slice(0, 6).map((movie: any) => ({
         ...movie,
         poster_path: movie.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${movie.poster_path}`
@@ -764,7 +584,7 @@ const MovieMatch = () => {
   };
 
   // Search for people
-  const searchPeople = async (query) => {
+  const searchPeople = async (query: string): Promise<SearchResult[]> => {
     try {
       const response = await fetch(
         `${TMDB_BASE_URL}/search/person?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
@@ -776,7 +596,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const formattedResults = data.results.slice(0, 6).map((person) => ({
+      const formattedResults = data.results.slice(0, 6).map((person: any) => ({
         ...person,
         profile_path: person.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
@@ -793,7 +613,7 @@ const MovieMatch = () => {
   };
 
   // Search for movies
-  const searchMovies = async (query) => {
+  const searchMovies = async (query: string): Promise<SearchResult[]> => {
     try {
       const response = await fetch(
         `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
@@ -805,7 +625,7 @@ const MovieMatch = () => {
       }
       const data = await response.json();
 
-      const formattedResults = data.results.slice(0, 6).map((movie) => ({
+      const formattedResults = data.results.slice(0, 6).map((movie: any) => ({
         ...movie,
         poster_path: movie.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${movie.poster_path}`
@@ -822,10 +642,10 @@ const MovieMatch = () => {
   };
 
   // Fetch person details
-  const fetchPersonDetails = async (personId) => {
+  const fetchPersonDetails = async (personId: number): Promise<PersonDetails | null> => {
     const cacheKey = `person_${personId}`;
     if (itemsDataCache[cacheKey]) {
-      return itemsDataCache[cacheKey];
+      return itemsDataCache[cacheKey] as PersonDetails;
     }
 
     try {
@@ -839,12 +659,12 @@ const MovieMatch = () => {
 
       const movies =
         data.movie_credits?.cast
-          ?.filter((movie) => movie.release_date)
-          ?.sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+          ?.filter((movie: any) => movie.release_date)
+          ?.sort((a: any, b: any) => (b.popularity || 0) - (a.popularity || 0))
           ?.slice(0, 30)
-          ?.map((movie) => movie.title) || [];
+          ?.map((movie: any) => movie.title) || [];
 
-      const personWithMovies = {
+      const personWithMovies: PersonDetails = {
         ...data,
         profile_path: data.profile_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${data.profile_path}`
@@ -867,10 +687,10 @@ const MovieMatch = () => {
   };
 
   // Fetch movie details
-  const fetchMovieDetails = async (movieId) => {
+  const fetchMovieDetails = async (movieId: number): Promise<MovieDetails | null> => {
     const cacheKey = `movie_${movieId}`;
     if (itemsDataCache[cacheKey]) {
-      return itemsDataCache[cacheKey];
+      return itemsDataCache[cacheKey] as MovieDetails;
     }
 
     try {
@@ -884,11 +704,11 @@ const MovieMatch = () => {
 
       const actors =
         data.credits?.cast
-          ?.sort((a, b) => a.order - b.order)
+          ?.sort((a: any, b: any) => a.order - b.order)
           ?.slice(0, 30)
-          ?.map((actor) => actor.name) || [];
+          ?.map((actor: any) => actor.name) || [];
 
-      const movieWithActors = {
+      const movieWithActors: MovieDetails = {
         ...data,
         poster_path: data.poster_path
           ? `${TMDB_IMAGE_BASE_URL}/w185${data.poster_path}`
@@ -911,7 +731,7 @@ const MovieMatch = () => {
   };
 
   // Handle correct answers
-  const handleCorrectAnswer = (item) => {
+  const handleCorrectAnswer = (item: string): void => {
     setNamedItems((prev) => [...prev, item]);
     setInputValue("");
     setValidationResult({
@@ -952,7 +772,7 @@ const MovieMatch = () => {
   };
 
   // Handle incorrect answers
-  const handleIncorrectAnswer = (message) => {
+  const handleIncorrectAnswer = (message: string): void => {
     // Show failure effect
     setEffectType("failure");
     setShowEffect(true);
@@ -960,13 +780,13 @@ const MovieMatch = () => {
     // Increment consecutive wrong answers for this player
     const newConsecutiveWrongs = {
       ...consecutiveWrongs,
-      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex]) + 1,
+      [currentPlayerIndex]: consecutiveWrongs[currentPlayerIndex] + 1,
     };
     setConsecutiveWrongs(newConsecutiveWrongs);
 
     // Create appropriate message
     const wrongsRemaining =
-      MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex]);
+      MAX_WRONG_ANSWERS - newConsecutiveWrongs[currentPlayerIndex];
     const wrongMessage =
       wrongsRemaining > 0
         ? `${message} ${wrongsRemaining} more incorrect answer${
@@ -979,7 +799,7 @@ const MovieMatch = () => {
       message: wrongMessage,
     });
 
-    if ((newConsecutiveWrongs[currentPlayerIndex]) >= MAX_WRONG_ANSWERS) {
+    if (newConsecutiveWrongs[currentPlayerIndex] >= MAX_WRONG_ANSWERS) {
       // Player is eliminated
       const newEliminatedPlayers = {
         ...eliminatedPlayers,
@@ -1023,7 +843,7 @@ const MovieMatch = () => {
   };
 
   // Handle "Did you mean?" suggestions
-  const acceptSuggestion = () => {
+  const acceptSuggestion = (): void => {
     if (didYouMeanSuggestion) {
       handleCorrectAnswer(didYouMeanSuggestion);
     }
@@ -1031,19 +851,19 @@ const MovieMatch = () => {
     setDidYouMeanSuggestion(null);
   };
 
-  const rejectSuggestion = () => {
+  const rejectSuggestion = (): void => {
     handleIncorrectAnswer("Incorrect answer.");
     setShowDidYouMean(false);
     setDidYouMeanSuggestion(null);
   };
 
   // Move to next player
-  const moveToNextPlayer = () => {
+  const moveToNextPlayer = (): void => {
     // Find the next non-eliminated player
     let nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
     let loopCount = 0;
 
-    while ((eliminatedPlayers[nextPlayerIndex]) && loopCount < players.length) {
+    while (eliminatedPlayers[nextPlayerIndex] && loopCount < players.length) {
       nextPlayerIndex = (nextPlayerIndex + 1) % players.length;
       loopCount++;
     }
@@ -1060,7 +880,7 @@ const MovieMatch = () => {
   };
 
   // Handle time up
-  const handleTimeUp = () => {
+  const handleTimeUp = (): void => {
     setTimerActive(false);
     
     // Show failure effect
@@ -1070,12 +890,12 @@ const MovieMatch = () => {
     // Increment consecutive wrong answers for this player
     const newConsecutiveWrongs = {
       ...consecutiveWrongs,
-      [currentPlayerIndex]: (consecutiveWrongs[currentPlayerIndex]) + 1,
+      [currentPlayerIndex]: consecutiveWrongs[currentPlayerIndex] + 1,
     };
     setConsecutiveWrongs(newConsecutiveWrongs);
 
     // Check if player should be eliminated
-    if ((newConsecutiveWrongs[currentPlayerIndex]) >= MAX_WRONG_ANSWERS) {
+    if (newConsecutiveWrongs[currentPlayerIndex] >= MAX_WRONG_ANSWERS) {
       const newEliminatedPlayers = {
         ...eliminatedPlayers,
         [currentPlayerIndex]: true,
@@ -1101,7 +921,7 @@ const MovieMatch = () => {
     } else {
       // Player gets a warning
       const wrongsRemaining =
-        MAX_WRONG_ANSWERS - (newConsecutiveWrongs[currentPlayerIndex]);
+        MAX_WRONG_ANSWERS - newConsecutiveWrongs[currentPlayerIndex];
       setValidationResult({
         valid: false,
         message: `Time's up! ${wrongsRemaining} more and you're out!`,
@@ -1127,7 +947,7 @@ const MovieMatch = () => {
   };
 
   // Issue a challenge
-  const issueChallenge = (targetPlayerIndex) => {
+  const issueChallenge = (targetPlayerIndex: number): void => {
     // Check if current player has challenges left
     if (players[currentPlayerIndex].challengesLeft <= 0) {
       return;
@@ -1148,7 +968,7 @@ const MovieMatch = () => {
   };
 
   // Select a search result
-  const selectSearchResult = async (item) => {
+  const selectSearchResult = async (item: SearchResult): Promise<void> => {
     setSelectedItem(null); // Clear previous selection
     setValidationResult(null); // Clear any validation messages
 
@@ -1158,7 +978,7 @@ const MovieMatch = () => {
       if (gameMode === "actor_to_movies") {
         detailedItem = await fetchPersonDetails(item.id);
 
-        if (!detailedItem || detailedItem.movies.length < 5) {
+        if (!detailedItem || (detailedItem as PersonDetails).movies.length < 5) {
           setValidationResult({
             valid: false,
             message:
@@ -1169,7 +989,7 @@ const MovieMatch = () => {
       } else {
         detailedItem = await fetchMovieDetails(item.id);
 
-        if (!detailedItem || detailedItem.actors.length < 5) {
+        if (!detailedItem || (detailedItem as MovieDetails).actors.length < 5) {
           setValidationResult({
             valid: false,
             message:
@@ -1182,8 +1002,8 @@ const MovieMatch = () => {
       setSelectedItem(detailedItem);
       setSearchQuery(
         gameMode === "actor_to_movies" 
-          ? (item.name || "")
-          : (item.title || "")
+          ? ('name' in item ? item.name : "")
+          : ('title' in item ? item.title : "")
       );
       setShowDropdown(false);
     } catch (error) {
@@ -1196,7 +1016,7 @@ const MovieMatch = () => {
   };
 
   // Validate movie input
-  const validateMovie = (movie) => {
+  const validateMovie = (movie: string): void => {
     if (!selectedItem) return;
     
     const movieTitle = movie.trim();
@@ -1212,7 +1032,7 @@ const MovieMatch = () => {
     }
 
     // First check for exact match (case insensitive)
-    const personDetails = selectedItem;
+    const personDetails = selectedItem as PersonDetails;
     const exactMatch = personDetails.movies.find(
       (m) => m.toLowerCase() === movieTitleLower
     );
@@ -1234,7 +1054,7 @@ const MovieMatch = () => {
   };
 
   // Validate actor input
-  const validateActor = (actor) => {
+  const validateActor = (actor: string): void => {
     if (!selectedItem) return;
     
     const actorName = actor.trim();
@@ -1250,7 +1070,7 @@ const MovieMatch = () => {
     }
 
     // First check for exact match (case insensitive)
-    const movieDetails = selectedItem;
+    const movieDetails = selectedItem as MovieDetails;
     const exactMatch = movieDetails.actors.find(
       (a) => a.toLowerCase() === actorNameLower
     );
@@ -1272,7 +1092,7 @@ const MovieMatch = () => {
   };
 
   // Validate input
-  const validateInput = () => {
+  const validateInput = (): void => {
     if (!inputValue.trim()) return;
 
     if (gameMode === "actor_to_movies") {
@@ -1283,7 +1103,7 @@ const MovieMatch = () => {
   };
 
   // Start game
-  const startGame = () => {
+  const startGame = (): void => {
     if (!selectedItem) return;
 
     setGameState("playing");
@@ -1304,7 +1124,7 @@ const MovieMatch = () => {
   };
 
   // End round
-  const endRound = () => {
+  const endRound = (): void => {
     setTimerActive(false);
     setGameState("roundEnd");
 
@@ -1342,7 +1162,7 @@ const MovieMatch = () => {
   };
 
   // Start new round
-  const startNewRound = () => {
+  const startNewRound = (): void => {
     setGameMode(null);
     setSelectedItem(null);
     setSearchQuery("");
@@ -1353,7 +1173,7 @@ const MovieMatch = () => {
   };
 
   // Reset game
-  const resetGame = () => {
+  const resetGame = (): void => {
     setGameMode(null);
     setSelectedItem(null);
     setSearchQuery("");
@@ -1369,23 +1189,24 @@ const MovieMatch = () => {
   };
 
   // Update player character
-  const updatePlayerCharacter = (playerId) => {
+  const updatePlayerCharacter = (playerId: number): void => {
     const updatedPlayers = [...players];
-    const currentCharIndex = CHARACTERS.indexOf(updatedPlayers[playerId-1].character);
+    const playerIndex = playerId - 1;
+    const currentCharIndex = CHARACTERS.indexOf(updatedPlayers[playerIndex].character);
     const nextCharIndex = (currentCharIndex + 1) % CHARACTERS.length;
-    updatedPlayers[playerId-1].character = CHARACTERS[nextCharIndex];
+    updatedPlayers[playerIndex].character = CHARACTERS[nextCharIndex];
     setPlayers(updatedPlayers);
   };
 
   // Mode selection handlers
-  const selectActorToMovies = () => {
+  const selectActorToMovies = (): void => {
     setGameMode("actor_to_movies");
     setGameState("setup");
     // Initialize with popular people
     fetchPopularPeople();
   };
 
-  const selectMovieToActors = () => {
+  const selectMovieToActors = (): void => {
     setGameMode("movie_to_actors");
     setGameState("setup");
     // Initialize with popular movies
@@ -1393,7 +1214,7 @@ const MovieMatch = () => {
   };
 
   // Handle key press for input
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent): void => {
     if (e.key === "Enter" && inputValue.trim()) {
       validateInput();
     }
@@ -1422,7 +1243,7 @@ const MovieMatch = () => {
               '--tx': `${(Math.random() - 0.5) * 100}px`,
               '--ty': `${(Math.random() - 0.5) * 100}px`,
               '--r': `${Math.random() * 360}deg`
-            }}
+            } as React.CSSProperties}
           >
             {effectType === "success" ? <Star size={16} /> : <X size={16} />}
           </div>
@@ -1629,13 +1450,13 @@ const MovieMatch = () => {
                       <img
                         src={
                           gameMode === "actor_to_movies"
-                            ? item.profile_path
-                            : item.poster_path
+                            ? 'profile_path' in item ? item.profile_path : ""
+                            : 'poster_path' in item ? item.poster_path : ""
                         }
                         alt={
                           gameMode === "actor_to_movies"
-                            ? item.name
-                            : item.title
+                            ? 'name' in item ? item.name : ""
+                            : 'title' in item ? item.title : ""
                         }
                         className="w-full h-full object-cover"
                       />
@@ -1643,17 +1464,17 @@ const MovieMatch = () => {
                     <div>
                       <div className="font-medium text-white">
                         {gameMode === "actor_to_movies"
-                          ? item.name
-                          : item.title}
+                          ? 'name' in item ? item.name : ""
+                          : 'title' in item ? item.title : ""}
                       </div>
                       <div className="text-xs text-gray-400">
                         {gameMode === "actor_to_movies"
                           ? `Known for: ${
-                              item.known_for_department || "Acting"
+                              'known_for_department' in item ? item.known_for_department : "Acting"
                             }`
                           : `Released: ${
-                              item.release_date
-                                ? new Date(item.release_date || "").getFullYear()
+                              'release_date' in item && item.release_date
+                                ? new Date(item.release_date).getFullYear()
                                 : "Unknown"
                             }`}
                       </div>
@@ -1677,13 +1498,13 @@ const MovieMatch = () => {
                 <img
                   src={
                     gameMode === "actor_to_movies"
-                      ? selectedItem.profile_path
-                      : selectedItem.poster_path
+                      ? 'profile_path' in selectedItem ? selectedItem.profile_path : ""
+                      : 'poster_path' in selectedItem ? selectedItem.poster_path : ""
                   }
                   alt={
                     gameMode === "actor_to_movies"
-                      ? selectedItem.name 
-                      : selectedItem.title
+                      ? 'name' in selectedItem ? selectedItem.name : ""
+                      : 'title' in selectedItem ? selectedItem.title : ""
                   }
                   className="w-full h-full object-cover"
                 />
@@ -1691,13 +1512,13 @@ const MovieMatch = () => {
               <div>
                 <div className="font-bold text-lg text-yellow-300">
                   {gameMode === "actor_to_movies"
-                    ? selectedItem.name
-                    : selectedItem.title}
+                    ? 'name' in selectedItem ? selectedItem.name : ""
+                    : 'title' in selectedItem ? selectedItem.title : ""}
                 </div>
                 <div className="text-sm text-gray-300">
                   {gameMode === "actor_to_movies"
-                    ? `${selectedItem.movies?.length || 0} movies found for this actor`
-                    : `${selectedItem.actors?.length || 0} actors found in this movie`}
+                    ? `${gameMode === "actor_to_movies" && 'movies' in selectedItem ? selectedItem.movies.length : 0} movies found for this actor`
+                    : `${gameMode === "movie_to_actors" && 'actors' in selectedItem ? selectedItem.actors.length : 0} actors found in this movie`}
                 </div>
               </div>
             </div>
@@ -1743,13 +1564,13 @@ const MovieMatch = () => {
               <img
                 src={
                   gameMode === "actor_to_movies"
-                    ? selectedItem.profile_path
-                    : selectedItem.poster_path
+                    ? 'profile_path' in selectedItem ? selectedItem.profile_path : ""
+                    : 'poster_path' in selectedItem ? selectedItem.poster_path : ""
                 }
                 alt={
                   gameMode === "actor_to_movies"
-                    ? selectedItem.name
-                    : selectedItem.title
+                    ? 'name' in selectedItem ? selectedItem.name : ""
+                    : 'title' in selectedItem ? selectedItem.title : ""
                 }
                 className="w-full h-full object-cover"
               />
@@ -1757,8 +1578,8 @@ const MovieMatch = () => {
             <div className="flex-grow">
               <div className="font-bold text-lg text-yellow-300">
                 {gameMode === "actor_to_movies"
-                  ? selectedItem.name
-                  : selectedItem.title}
+                  ? 'name' in selectedItem ? selectedItem.name : ""
+                  : 'title' in selectedItem ? selectedItem.title : ""}
               </div>
               <div className="text-sm text-gray-300">
                 {gameMode === "actor_to_movies"
@@ -1798,7 +1619,7 @@ const MovieMatch = () => {
                   <span
                     key={i}
                     className={`inline-block w-3 h-3 rounded-full mx-px ${
-                      i < (consecutiveWrongs[currentPlayerIndex])
+                      i < consecutiveWrongs[currentPlayerIndex]
                         ? "bg-red-300"
                         : "bg-white bg-opacity-30"
                     }`}
@@ -1893,10 +1714,10 @@ const MovieMatch = () => {
               </div>
             )}
 
-            {showDidYouMean && (
+            {showDidYouMean && didYouMeanSuggestion && (
               <div className="mt-2 p-3 rounded bg-yellow-900 border border-yellow-500">
                 <p className="text-sm text-yellow-200 mb-2">
-                  Your entry: "{inputValue}"
+                  Did you mean: <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>?
                 </p>
                 <div className="flex space-x-2">
                   <button
@@ -1924,7 +1745,7 @@ const MovieMatch = () => {
                 {players.map(
                   (player, index) =>
                     index !== currentPlayerIndex &&
-                    !(eliminatedPlayers[index]) && (
+                    !eliminatedPlayers[index] && (
                       <button
                         key={player.id}
                         onClick={() => issueChallenge(index)}
@@ -1999,13 +1820,13 @@ const MovieMatch = () => {
                 <img
                   src={
                     gameMode === "actor_to_movies"
-                      ? selectedItem.profile_path
-                      : selectedItem.poster_path
+                      ? 'profile_path' in selectedItem ? selectedItem.profile_path : ""
+                      : 'poster_path' in selectedItem ? selectedItem.poster_path : ""
                   }
                   alt={
                     gameMode === "actor_to_movies"
-                      ? selectedItem.name
-                      : selectedItem.title
+                      ? 'name' in selectedItem ? selectedItem.name : ""
+                      : 'title' in selectedItem ? selectedItem.title : ""
                   }
                   className="w-full h-full object-cover"
                 />
@@ -2013,8 +1834,8 @@ const MovieMatch = () => {
               <div>
                 <div className="font-bold text-lg text-yellow-300">
                   {gameMode === "actor_to_movies"
-                    ? selectedItem.name
-                    : selectedItem.title}
+                    ? 'name' in selectedItem ? selectedItem.name : ""
+                    : 'title' in selectedItem ? selectedItem.title : ""}
                 </div>
                 <div className="text-sm text-gray-300 mb-2">
                   {namedItems.length} items named
@@ -2098,14 +1919,5 @@ const MovieMatch = () => {
     </div>
   );
 };
-export default function MovieMatch() {
-  return (
-    <>
-      <p className="font-medium mb-2 text-yellow-200">
-        Did you mean:{" "}
-      </p>
-      <span className="font-bold text-yellow-400">{didYouMeanSuggestion}</span>
-      <p className=""></p>
-    </>
-  );
-}
+
+export default MovieMatch;

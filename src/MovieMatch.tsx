@@ -63,11 +63,6 @@ interface ItemsDataCache {
   [key: string]: ItemDetails;
 }
 
-// Maps for consecutive wrongs and eliminated players
-interface PlayerMap {
-  [key: number]: number | boolean;
-}
-
 // Custom timeout type for browser environment
 type TimeoutRef = ReturnType<typeof setTimeout> | null;
 

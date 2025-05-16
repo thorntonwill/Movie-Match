@@ -94,47 +94,21 @@ const TOP_MOVIES = [
   { id: 637, title: "Life Is Beautiful" },
   { id: 19404, title: "Dilwale Dulhania Le Jayenge" },
   { id: 278, title: "The Shawshank Redemption" },
-  
-  // Additional Movies for Men in their mid-20s
   { id: 24428, title: "The Avengers" },
-  { id: 299536, title: "Avengers: Infinity War" },
-  { id: 299534, title: "Avengers: Endgame" },
   { id: 557, title: "Spider-Man" },
   { id: 315635, title: "Spider-Man: Homecoming" },
-  { id: 429617, title: "Spider-Man: Far From Home" },
-  { id: 634649, title: "Spider-Man: No Way Home" },
   { id: 603, title: "The Matrix" },
-  { id: 604, title: "The Matrix Reloaded" },
-  { id: 605, title: "The Matrix Revolutions" },
   { id: 49026, title: "The Dark Knight Rises" },
-  { id: 272, title: "Batman Begins" },
   { id: 1726, title: "Iron Man" },
-  { id: 10138, title: "Iron Man 2" },
-  { id: 68721, title: "Iron Man 3" },
-  { id: 284053, title: "Thor: Ragnarok" },
   { id: 44833, title: "Superbad" },
-  { id: 109445, title: "Frozen" },
   { id: 105, title: "Back to the Future" },
   { id: 98, title: "Gladiator" },
-  { id: 8587, title: "The Lion King" },
   { id: 597, title: "Titanic" },
   { id: 671, title: "Harry Potter and the Philosopher's Stone" },
-  { id: 767, title: "Harry Potter and the Half-Blood Prince" },
-  { id: 12444, title: "Harry Potter and the Deathly Hallows: Part 1" },
-  { id: 12445, title: "Harry Potter and the Deathly Hallows: Part 2" },
-  { id: 118340, title: "Guardians of the Galaxy" },
-  { id: 181808, title: "Star Wars: The Last Jedi" },
-  { id: 11, title: "Star Wars" },
   { id: 1891, title: "The Empire Strikes Back" },
-  { id: 1892, title: "Return of the Jedi" },
-  { id: 330459, title: "Rogue One: A Star Wars Story" },
   { id: 438631, title: "Dune" },
   { id: 254, title: "King Kong" },
   { id: 335984, title: "Blade Runner 2049" },
-  { id: 335983, title: "Venom" },
-  { id: 447365, title: "Guardians of the Galaxy Vol. 3" },
-  { id: 85, title: "Raiders of the Lost Ark" },
-  { id: 87, title: "Indiana Jones and the Temple of Doom" },
   { id: 89, title: "Indiana Jones and the Last Crusade" },
   { id: 807, title: "Se7en" },
   { id: 629, title: "The Usual Suspects" },
@@ -142,10 +116,7 @@ const TOP_MOVIES = [
   { id: 77338, title: "The Intouchables" },
   { id: 346698, title: "Barbie" },
   { id: 346364, title: "Oppenheimer" },
-  { id: 502356, title: "The Super Mario Bros. Movie" },
-  { id: 76600, title: "Avatar: The Way of Water" },
   { id: 497, title: "The Green Mile" },
-  { id: 17473, title: "Kick-Ass" }
 ];
 
 const TOP_ACTORS = [
@@ -153,7 +124,6 @@ const TOP_ACTORS = [
   { id: 3, name: "Tom Hanks" },
   { id: 31, name: "Tom Cruise" },
   { id: 192, name: "Morgan Freeman" },
-  { id: 2, name: "Mark Hamill" },
   { id: 1136406, name: "Zendaya" },
   { id: 18918, name: "Leonardo DiCaprio" },
   { id: 3894, name: "Christian Bale" },
@@ -165,21 +135,16 @@ const TOP_ACTORS = [
   { id: 1283, name: "Helena Bonham Carter" },
   { id: 8691, name: "Robert De Niro" },
   { id: 52, name: "Carrie Fisher" },
-  
-  // Additional Popular Actors from Last 50 Years
   { id: 1, name: "George Lucas" },
   { id: 4, name: "Harrison Ford" },
   { id: 5, name: "Robert Downey Jr." },
   { id: 6, name: "Samuel L. Jackson" },
-  { id: 8, name: "Anthony Daniels" },
   { id: 13, name: "Keanu Reeves" },
-  { id: 53, name: "Sigourney Weaver" },
   { id: 57, name: "Al Pacino" },
   { id: 62, name: "Bruce Willis" },
   { id: 65, name: "Arnold Schwarzenegger" },
   { id: 71, name: "Denzel Washington" },
   { id: 85, name: "Johnny Depp" },
-  { id: 87, name: "Sidney Poitier" },
   { id: 109, name: "Jack Nicholson" },
   { id: 113, name: "Sandra Bullock" },
   { id: 115, name: "Will Smith" },
@@ -215,8 +180,6 @@ const TOP_ACTORS = [
   { id: 2524, name: "Idris Elba" },
   { id: 2888, name: "Hugh Jackman" },
   { id: 3223, name: "Joaquin Phoenix" },
-  { id: 5576, name: "Gal Gadot" },
-  { id: 6193, name: "John Boyega" }
 ];
 
 // CSS for animations
@@ -655,7 +618,7 @@ const MovieMatch = () => {
       
       const peopleWithBasicInfo = randomizedActors.map(actor => ({
         ...actor,
-        profile_path: `https://image.tmdb.org/t/p/w185/wwemzKWzjKYJFfCeiB57q3r4Bcm.png`, // Default image
+        profile_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(actor.name)}`, // Better placeholder
         known_for_department: "Acting"
       }));
 
@@ -679,7 +642,7 @@ const MovieMatch = () => {
       
       const moviesWithBasicInfo = randomizedMovies.map(movie => ({
         ...movie,
-        poster_path: `https://image.tmdb.org/t/p/w185/wwemzKWzjKYJFfCeiB57q3r4Bcm.png`, // Default image
+        poster_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(movie.title)}`, // Better placeholder
         release_date: "2023-01-01" // Default date
       }));
 
@@ -1417,20 +1380,20 @@ const MovieMatch = () => {
       <style dangerouslySetInnerHTML={{ __html: styleSheet }} />
       
       {/* Theater curtains */}
-      <div className={`absolute top-0 left-0 w-1/2 h-full bg-red-800 curtain-left z-20 ${curtainsOpen ? "curtain-open-left" : ""}`}></div>
-      <div className={`absolute top-0 right-0 w-1/2 h-full bg-red-800 curtain-right z-20 ${curtainsOpen ? "curtain-open-right" : ""}`}></div>
+      <div className={`absolute top-0 left-0 w-1/2 h-full bg-red-800 curtain-left z-10 ${curtainsOpen ? "curtain-open-left" : ""}`}></div>
+      <div className={`absolute top-0 right-0 w-1/2 h-full bg-red-800 curtain-right z-10 ${curtainsOpen ? "curtain-open-right" : ""}`}></div>
       
       {/* Sparkles effect overlay */}
       {renderSparkles()}
       
       {/* Movie theater lights */}
-      <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-      <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+      <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
+      <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
+      <div className="absolute bottom-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
+      <div className="absolute bottom-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
 
       {/* Header */}
-      <div className="w-full mb-4 text-center z-30">
+      <div className="w-full mb-4 text-center z-40">
         <h1 className="text-3xl font-bold mb-2 text-yellow-400 cinema-title">Movie Match</h1>
         {gameState !== "landing" && (
           <p className="text-sm text-yellow-200">
@@ -1443,7 +1406,7 @@ const MovieMatch = () => {
 
       {/* Player Scores */}
       {gameState !== "landing" && (
-        <div className="flex justify-between w-full mb-4 z-30">
+        <div className="flex justify-between w-full mb-4 z-40">
           {players.map((player, index) => (
             <div
               key={player.id}
@@ -1480,7 +1443,7 @@ const MovieMatch = () => {
 
       {/* Game Screens */}
       {gameState === "landing" && (
-        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-xl font-bold mb-4 text-center text-yellow-400">How to Play</h2>
 
           <div className="mb-6">
@@ -1534,7 +1497,7 @@ const MovieMatch = () => {
       )}
 
       {gameState === "setup" && (
-        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-lg font-bold mb-3 text-yellow-400">
             {gameMode === "actor_to_movies"
               ? "Select an Actor"
@@ -1605,20 +1568,38 @@ const MovieMatch = () => {
                     onClick={() => selectSearchResult(item)}
                     className="flex items-center p-2 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
                   >
-                    <div className="w-12 h-16 bg-gray-900 rounded mr-3 overflow-hidden">
-                      <img
-                        src={
-                          gameMode === "actor_to_movies"
-                            ? 'profile_path' in item ? item.profile_path : ""
-                            : 'poster_path' in item ? item.poster_path : ""
-                        }
-                        alt={
-                          gameMode === "actor_to_movies"
-                            ? 'name' in item ? item.name : ""
-                            : 'title' in item ? item.title : ""
-                        }
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-12 h-16 bg-gray-900 rounded mr-3 overflow-hidden flex items-center justify-center">
+                      {gameMode === "actor_to_movies" && 'profile_path' in item ? (
+                        <img
+                          src={item.profile_path}
+                          alt={'name' in item ? item.name : "Actor"}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback if image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://via.placeholder.com/185x278?text=${
+                              'name' in item ? encodeURIComponent(item.name) : "Actor"
+                            }`;
+                          }}
+                        />
+                      ) : gameMode === "movie_to_actors" && 'poster_path' in item ? (
+                        <img
+                          src={item.poster_path}
+                          alt={'title' in item ? item.title : "Movie"}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback if image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://via.placeholder.com/185x278?text=${
+                              'title' in item ? encodeURIComponent(item.title) : "Movie"
+                            }`;
+                          }}
+                        />
+                      ) : (
+                        <div className="text-xs text-center text-gray-400 p-1">
+                          {'name' in item ? item.name : 'title' in item ? item.title : "No Image"}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <div className="font-medium text-white">
@@ -1647,20 +1628,38 @@ const MovieMatch = () => {
 
           {selectedItem && (
             <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
-              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
-                <img
-                  src={
-                    gameMode === "actor_to_movies"
-                      ? 'profile_path' in selectedItem ? selectedItem.profile_path : ""
-                      : 'poster_path' in selectedItem ? selectedItem.poster_path : ""
-                  }
-                  alt={
-                    gameMode === "actor_to_movies"
-                      ? 'name' in selectedItem ? selectedItem.name : ""
-                      : 'title' in selectedItem ? selectedItem.title : ""
-                  }
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden flex items-center justify-center">
+                {gameMode === "actor_to_movies" && 'profile_path' in selectedItem ? (
+                  <img
+                    src={selectedItem.profile_path}
+                    alt={'name' in selectedItem ? selectedItem.name : "Actor"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'name' in selectedItem ? encodeURIComponent(selectedItem.name) : "Actor"
+                      }`;
+                    }}
+                  />
+                ) : gameMode === "movie_to_actors" && 'poster_path' in selectedItem ? (
+                  <img
+                    src={selectedItem.poster_path}
+                    alt={'title' in selectedItem ? selectedItem.title : "Movie"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'title' in selectedItem ? encodeURIComponent(selectedItem.title) : "Movie"
+                      }`;
+                    }}
+                  />
+                ) : (
+                  <div className="text-xs text-center text-gray-400 p-1">
+                    {'name' in selectedItem ? selectedItem.name : 'title' in selectedItem ? selectedItem.title : "No Image"}
+                  </div>
+                )}
               </div>
               <div>
                 <div className="font-bold text-lg text-yellow-300">
@@ -1710,27 +1709,81 @@ const MovieMatch = () => {
       )}
 
       {(gameState === "playing" || gameState === "challenge") && (gameState === "challenge" ? tempChallengeItem : selectedItem) && (
-        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           {/* Selected item display */}
           <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
-            <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
-              <img
-                src={
-                  gameState === "challenge" ? (
-                    // For challenge, show the opposite type from the current game mode
-                    gameMode === "actor_to_movies" ?
-                      ('poster_path' in tempChallengeItem! ? tempChallengeItem!.poster_path : "") :
-                      ('profile_path' in tempChallengeItem! ? tempChallengeItem!.profile_path : "")
-                  ) : (
-                    // For regular gameplay, show according to game mode
-                    gameMode === "actor_to_movies"
-                      ? 'profile_path' in selectedItem! ? selectedItem!.profile_path : ""
-                      : 'poster_path' in selectedItem! ? selectedItem!.poster_path : ""
-                  )
-                }
-                alt="Item"
-                className="w-full h-full object-cover"
-              />
+            <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden flex items-center justify-center">
+              {gameState === "challenge" ? (
+                // For challenge, show the opposite type from the current game mode
+                gameMode === "actor_to_movies" && 'poster_path' in tempChallengeItem! ? (
+                  <img
+                    src={tempChallengeItem!.poster_path}
+                    alt={'title' in tempChallengeItem! ? tempChallengeItem!.title : "Movie"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'title' in tempChallengeItem! ? encodeURIComponent(tempChallengeItem!.title) : "Movie"
+                      }`;
+                    }}
+                  />
+                ) : gameMode === "movie_to_actors" && 'profile_path' in tempChallengeItem! ? (
+                  <img
+                    src={tempChallengeItem!.profile_path}
+                    alt={'name' in tempChallengeItem! ? tempChallengeItem!.name : "Actor"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'name' in tempChallengeItem! ? encodeURIComponent(tempChallengeItem!.name) : "Actor"
+                      }`;
+                    }}
+                  />
+                ) : (
+                  <div className="text-xs text-center text-gray-400 p-1">
+                    {gameMode === "actor_to_movies" 
+                      ? ('title' in tempChallengeItem! ? tempChallengeItem!.title : "Movie") 
+                      : ('name' in tempChallengeItem! ? tempChallengeItem!.name : "Actor")}
+                  </div>
+                )
+              ) : (
+                // For regular gameplay, show according to game mode
+                gameMode === "actor_to_movies" && 'profile_path' in selectedItem! ? (
+                  <img
+                    src={selectedItem!.profile_path}
+                    alt={'name' in selectedItem! ? selectedItem!.name : "Actor"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'name' in selectedItem! ? encodeURIComponent(selectedItem!.name) : "Actor"
+                      }`;
+                    }}
+                  />
+                ) : gameMode === "movie_to_actors" && 'poster_path' in selectedItem! ? (
+                  <img
+                    src={selectedItem!.poster_path}
+                    alt={'title' in selectedItem! ? selectedItem!.title : "Movie"}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://via.placeholder.com/185x278?text=${
+                        'title' in selectedItem! ? encodeURIComponent(selectedItem!.title) : "Movie"
+                      }`;
+                    }}
+                  />
+                ) : (
+                  <div className="text-xs text-center text-gray-400 p-1">
+                    {gameMode === "actor_to_movies" 
+                      ? ('name' in selectedItem! ? selectedItem!.name : "Actor") 
+                      : ('title' in selectedItem! ? selectedItem!.title : "Movie")}
+                  </div>
+                )
+              )}
             </div>
             <div className="flex-grow">
               <div className="font-bold text-lg text-yellow-300">
@@ -1971,7 +2024,7 @@ const MovieMatch = () => {
       )}
 
       {gameState === "roundEnd" && !winner && (
-        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
+        <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-lg font-bold mb-3 text-center text-yellow-400">
             Round Complete!
           </h2>
@@ -2046,7 +2099,7 @@ const MovieMatch = () => {
       )}
 
       {(gameState === "gameOver" || winner) && winner && (
-        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 text-center border-2 border-yellow-500 z-30">
+        <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 text-center border-2 border-yellow-500 z-40">
           <h2 className="text-xl font-bold mb-3 text-yellow-400">Game Over!</h2>
 
           <div className={`p-4 rounded-lg mb-6 ${winner.color} text-white`}>
@@ -2080,7 +2133,7 @@ const MovieMatch = () => {
       )}
 
       {/* Footer */}
-      <div className="text-center text-xs text-yellow-200 mt-2 z-30">
+      <div className="text-center text-xs text-yellow-200 mt-2 z-40">
         <p>MovieMatch Game - Developed by Will Thornton & Claude</p>
         <p>
           Data provided by{" "}

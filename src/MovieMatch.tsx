@@ -73,6 +73,7 @@ const CHARACTERS = [
 
 // Top movies and actors for the "random" feature
 const TOP_MOVIES = [
+  // Original Movies
   { id: 238, title: "The Godfather" },
   { id: 389, title: "12 Angry Men" },
   { id: 155, title: "The Dark Knight" },
@@ -92,10 +93,63 @@ const TOP_MOVIES = [
   { id: 76338, title: "Thor: The Dark World" },
   { id: 637, title: "Life Is Beautiful" },
   { id: 19404, title: "Dilwale Dulhania Le Jayenge" },
-  { id: 278, title: "The Shawshank Redemption" }
+  { id: 278, title: "The Shawshank Redemption" },
+  
+  // Additional Movies for Men in their mid-20s
+  { id: 24428, title: "The Avengers" },
+  { id: 299536, title: "Avengers: Infinity War" },
+  { id: 299534, title: "Avengers: Endgame" },
+  { id: 557, title: "Spider-Man" },
+  { id: 315635, title: "Spider-Man: Homecoming" },
+  { id: 429617, title: "Spider-Man: Far From Home" },
+  { id: 634649, title: "Spider-Man: No Way Home" },
+  { id: 603, title: "The Matrix" },
+  { id: 604, title: "The Matrix Reloaded" },
+  { id: 605, title: "The Matrix Revolutions" },
+  { id: 49026, title: "The Dark Knight Rises" },
+  { id: 272, title: "Batman Begins" },
+  { id: 1726, title: "Iron Man" },
+  { id: 10138, title: "Iron Man 2" },
+  { id: 68721, title: "Iron Man 3" },
+  { id: 284053, title: "Thor: Ragnarok" },
+  { id: 44833, title: "Superbad" },
+  { id: 109445, title: "Frozen" },
+  { id: 105, title: "Back to the Future" },
+  { id: 98, title: "Gladiator" },
+  { id: 8587, title: "The Lion King" },
+  { id: 597, title: "Titanic" },
+  { id: 671, title: "Harry Potter and the Philosopher's Stone" },
+  { id: 767, title: "Harry Potter and the Half-Blood Prince" },
+  { id: 12444, title: "Harry Potter and the Deathly Hallows: Part 1" },
+  { id: 12445, title: "Harry Potter and the Deathly Hallows: Part 2" },
+  { id: 118340, title: "Guardians of the Galaxy" },
+  { id: 181808, title: "Star Wars: The Last Jedi" },
+  { id: 11, title: "Star Wars" },
+  { id: 1891, title: "The Empire Strikes Back" },
+  { id: 1892, title: "Return of the Jedi" },
+  { id: 330459, title: "Rogue One: A Star Wars Story" },
+  { id: 438631, title: "Dune" },
+  { id: 254, title: "King Kong" },
+  { id: 335984, title: "Blade Runner 2049" },
+  { id: 335983, title: "Venom" },
+  { id: 447365, title: "Guardians of the Galaxy Vol. 3" },
+  { id: 85, title: "Raiders of the Lost Ark" },
+  { id: 87, title: "Indiana Jones and the Temple of Doom" },
+  { id: 89, title: "Indiana Jones and the Last Crusade" },
+  { id: 807, title: "Se7en" },
+  { id: 629, title: "The Usual Suspects" },
+  { id: 423, title: "The Pianist" },
+  { id: 77338, title: "The Intouchables" },
+  { id: 346698, title: "Barbie" },
+  { id: 346364, title: "Oppenheimer" },
+  { id: 502356, title: "The Super Mario Bros. Movie" },
+  { id: 76600, title: "Avatar: The Way of Water" },
+  { id: 497, title: "The Green Mile" },
+  { id: 17473, title: "Kick-Ass" }
 ];
 
 const TOP_ACTORS = [
+  // Original Actors
   { id: 3, name: "Tom Hanks" },
   { id: 31, name: "Tom Cruise" },
   { id: 192, name: "Morgan Freeman" },
@@ -110,7 +164,59 @@ const TOP_ACTORS = [
   { id: 17647, name: "Scarlett Johansson" },
   { id: 1283, name: "Helena Bonham Carter" },
   { id: 8691, name: "Robert De Niro" },
-  { id: 52, name: "Carrie Fisher" }
+  { id: 52, name: "Carrie Fisher" },
+  
+  // Additional Popular Actors from Last 50 Years
+  { id: 1, name: "George Lucas" },
+  { id: 4, name: "Harrison Ford" },
+  { id: 5, name: "Robert Downey Jr." },
+  { id: 6, name: "Samuel L. Jackson" },
+  { id: 8, name: "Anthony Daniels" },
+  { id: 13, name: "Keanu Reeves" },
+  { id: 53, name: "Sigourney Weaver" },
+  { id: 57, name: "Al Pacino" },
+  { id: 62, name: "Bruce Willis" },
+  { id: 65, name: "Arnold Schwarzenegger" },
+  { id: 71, name: "Denzel Washington" },
+  { id: 85, name: "Johnny Depp" },
+  { id: 87, name: "Sidney Poitier" },
+  { id: 109, name: "Jack Nicholson" },
+  { id: 113, name: "Sandra Bullock" },
+  { id: 115, name: "Will Smith" },
+  { id: 117, name: "Jim Carrey" },
+  { id: 131, name: "Halle Berry" },
+  { id: 136, name: "Anthony Hopkins" },
+  { id: 139, name: "Julia Roberts" },
+  { id: 154, name: "Mel Gibson" },
+  { id: 190, name: "Audrey Hepburn" },
+  { id: 193, name: "Meryl Streep" },
+  { id: 204, name: "Kate Winslet" },
+  { id: 216, name: "Jackie Chan" },
+  { id: 224, name: "Dustin Hoffman" },
+  { id: 288, name: "Ben Affleck" },
+  { id: 335, name: "Jennifer Aniston" },
+  { id: 341, name: "Daniel Day-Lewis" },
+  { id: 349, name: "Jennifer Lawrence" },
+  { id: 380, name: "Robert Redford" },
+  { id: 491, name: "Cate Blanchett" },
+  { id: 500, name: "Tom Hardy" },
+  { id: 1245, name: "Angelina Jolie" },
+  { id: 1327, name: "Matt Damon" },
+  { id: 1333, name: "Emma Stone" },
+  { id: 1336, name: "Viggo Mortensen" },
+  { id: 1574, name: "Ryan Gosling" },
+  { id: 1625, name: "Michelle Yeoh" },
+  { id: 1637, name: "Sylvester Stallone" },
+  { id: 1892, name: "Viola Davis" },
+  { id: 1920, name: "Dwayne Johnson" },
+  { id: 2037, name: "Natalie Portman" },
+  { id: 2176, name: "Charlize Theron" },
+  { id: 2231, name: "Nicole Kidman" },
+  { id: 2524, name: "Idris Elba" },
+  { id: 2888, name: "Hugh Jackman" },
+  { id: 3223, name: "Joaquin Phoenix" },
+  { id: 5576, name: "Gal Gadot" },
+  { id: 6193, name: "John Boyega" }
 ];
 
 // CSS for animations
@@ -174,7 +280,7 @@ const styleSheet = `
   }
   
   .cinema-title {
-    text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700;
+    text-shadow: 0 0 2px #FFD700, 0 0 4px #FFD700;
   }
 `;
 
@@ -206,6 +312,9 @@ const MovieMatch = () => {
   const [effectType, setEffectType] = useState<"success" | "failure" | null>(null);
   const [bounceCharacter, setBounceCharacter] = useState<number | null>(null);
   const [curtainsOpen, setCurtainsOpen] = useState<boolean>(false);
+  
+  // Challenge state
+  const [tempChallengeItem, setTempChallengeItem] = useState<ItemDetails | null>(null);
 
   // Dropdown state
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -374,10 +483,21 @@ const MovieMatch = () => {
     if (!input || input.length < 2) return null;
 
     const lowerInput = input.toLowerCase();
+    
+    // You can make substring matching more strict by requiring more overlap
+    // For example, only match if the input is a significant part of the option
+    // Or comment out this entire block to disable substring matching
     const substringMatches = validOptions.filter(
-      (option) =>
-        option.toLowerCase().includes(lowerInput) ||
-        lowerInput.includes(option.toLowerCase())
+      (option) => {
+        const lowerOption = option.toLowerCase();
+        // Make this stricter by requiring a longer match
+        // For example, require at least 5 characters or 70% of the input length to match
+        const minMatchLength = Math.max(5, Math.floor(lowerInput.length * 0.7));
+        
+        // Find common substring of at least minMatchLength
+        return (lowerOption.includes(lowerInput) && lowerInput.length >= minMatchLength) ||
+               (lowerInput.includes(lowerOption) && lowerOption.length >= minMatchLength);
+      }
     );
 
     if (substringMatches.length > 0) {
@@ -393,21 +513,20 @@ const MovieMatch = () => {
 
     for (const option of validOptions) {
       const lowerOption = option.toLowerCase();
+      
+      // You can make this stricter by requiring more similarity in the first letters
+      // For example, require the first two letters to match instead of just the first
       if (
-        lowerOption[0] === lowerInput[0] ||
-        lowerOption[lowerOption.length - 1] ===
-          lowerInput[lowerInput.length - 1]
+        lowerOption.substring(0, 2) === lowerInput.substring(0, 2) || 
+        lowerOption.substring(lowerOption.length - 2) === 
+          lowerInput.substring(lowerInput.length - 2)
       ) {
         const distance = levenshteinDistance(lowerInput, lowerOption);
         const maxLength = Math.max(lowerInput.length, lowerOption.length);
-        const similarityThreshold = maxLength * 0.4;
-
-        if (distance < similarityThreshold && distance < bestDistance) {
-          bestDistance = distance;
-          bestMatch = option;
-        }
-      }
-    }
+        
+        // This is the main threshold to adjust - lower values = stricter matching
+        // Change from 0.4 (40%) to a lower value like 0.3 (30%) to make it harder
+        const similarityThreshold = maxLength * 0.3; // Make this smaller to be more strict
 
     return bestMatch;
   };
@@ -522,26 +641,20 @@ const MovieMatch = () => {
   const fetchPopularPeople = async (): Promise<void> => {
     setSearchLoading(true);
     try {
-      const response = await fetch(
-        `${TMDB_BASE_URL}/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-
-      const peopleWithBasicInfo = data.results.slice(0, 6).map((person: any) => ({
-        ...person,
-        profile_path: person.profile_path
-          ? `${TMDB_IMAGE_BASE_URL}/w185${person.profile_path}`
-          : `https://via.placeholder.com/185x278?text=${encodeURIComponent(
-              person.name
-            )}`,
+      // Instead of making API call, use a randomized selection from our TOP_ACTORS
+      const randomizedActors = [...TOP_ACTORS]
+        .sort(() => 0.5 - Math.random()) // Shuffle the array
+        .slice(0, 6);  // Take only 6 actors
+      
+      const peopleWithBasicInfo = randomizedActors.map(actor => ({
+        ...actor,
+        profile_path: `https://image.tmdb.org/t/p/w185/wwemzKWzjKYJFfCeiB57q3r4Bcm.png`, // Default image
+        known_for_department: "Acting"
       }));
 
       setSearchResults(peopleWithBasicInfo);
     } catch (error) {
-      console.error("Error fetching popular people:", error);
+      console.error("Error preparing actor list:", error);
       setSearchResults([]);
     } finally {
       setSearchLoading(false);
@@ -552,26 +665,20 @@ const MovieMatch = () => {
   const fetchPopularMovies = async (): Promise<void> => {
     setSearchLoading(true);
     try {
-      const response = await fetch(
-        `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      const data = await response.json();
-
-      const moviesWithBasicInfo = data.results.slice(0, 6).map((movie: any) => ({
+      // Instead of making API call, use a randomized selection from our TOP_MOVIES
+      const randomizedMovies = [...TOP_MOVIES]
+        .sort(() => 0.5 - Math.random()) // Shuffle the array
+        .slice(0, 6);  // Take only 6 movies
+      
+      const moviesWithBasicInfo = randomizedMovies.map(movie => ({
         ...movie,
-        poster_path: movie.poster_path
-          ? `${TMDB_IMAGE_BASE_URL}/w185${movie.poster_path}`
-          : `https://via.placeholder.com/185x278?text=${encodeURIComponent(
-              movie.title
-            )}`,
+        poster_path: `https://image.tmdb.org/t/p/w185/wwemzKWzjKYJFfCeiB57q3r4Bcm.png`, // Default image
+        release_date: "2023-01-01" // Default date
       }));
 
       setSearchResults(moviesWithBasicInfo);
     } catch (error) {
-      console.error("Error fetching popular movies:", error);
+      console.error("Error preparing movie list:", error);
       setSearchResults([]);
     } finally {
       setSearchLoading(false);
@@ -747,13 +854,14 @@ const MovieMatch = () => {
     }));
 
     // Move to next player
-    if (gameState === "challenge") {
+          if (gameState === "challenge") {
       // If challenge was successful
       setChallengeStatus("success");
       setTimeout(() => {
         // Reset challenge state and continue game with next player
         setChallengeStatus(null);
         setChallengedPlayerIndex(null);
+        setTempChallengeItem(null);
         setGameState("playing");
         moveToNextPlayer();
       }, 1500);
@@ -824,6 +932,7 @@ const MovieMatch = () => {
         setValidationResult(null);
         setInputValue("");
         setChallengedPlayerIndex(null);
+        setTempChallengeItem(null);
         setGameState("playing");
         moveToNextPlayer();
       }, 1500);
@@ -942,9 +1051,54 @@ const MovieMatch = () => {
   };
 
   // Issue a challenge
-  const issueChallenge = (targetPlayerIndex: number): void => {
+  const issueChallenge = async (targetPlayerIndex: number): Promise<void> => {
     // Check if current player has challenges left
     if (players[currentPlayerIndex].challengesLeft <= 0) {
+      return;
+    }
+
+    // Get the last named item
+    const lastNamedItem = namedItems[namedItems.length - 1];
+    if (!lastNamedItem) {
+      setValidationResult({
+        valid: false,
+        message: "No items have been named yet to challenge!"
+      });
+      return;
+    }
+
+    // Check challenge direction - should be opposite of current game mode
+    let challengeItem = null;
+    let challengeItemType = "";
+    
+    try {
+      if (gameMode === "actor_to_movies") {
+        // If current mode is actor->movies, challenge with a movie->actors
+        // Search for the movie details
+        challengeItemType = "movie";
+        const searchResults = await searchMovies(lastNamedItem);
+        if (searchResults && searchResults.length > 0) {
+          const movieDetails = await fetchMovieDetails(searchResults[0].id);
+          challengeItem = movieDetails;
+        }
+      } else {
+        // If current mode is movie->actors, challenge with an actor->movies
+        challengeItemType = "actor";
+        const searchResults = await searchPeople(lastNamedItem);
+        if (searchResults && searchResults.length > 0) {
+          const actorDetails = await fetchPersonDetails(searchResults[0].id);
+          challengeItem = actorDetails;
+        }
+      }
+    } catch (error) {
+      console.error("Error setting up challenge:", error);
+    }
+
+    if (!challengeItem) {
+      setValidationResult({
+        valid: false,
+        message: `Could not find details for the ${challengeItemType}. Try a different challenge.`
+      });
       return;
     }
 
@@ -953,6 +1107,9 @@ const MovieMatch = () => {
     updatedPlayers[currentPlayerIndex].challengesLeft--;
     setPlayers(updatedPlayers);
 
+    // Set temporary item for the challenge
+    setTempChallengeItem(challengeItem);
+    
     // Set challenge state
     setChallengedPlayerIndex(targetPlayerIndex);
     setCurrentPlayerIndex(targetPlayerIndex);
@@ -1426,7 +1583,7 @@ const MovieMatch = () => {
             </div>
 
             {showDropdown && searchResults.length > 0 && (
-              <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-10 mt-1">
+              <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-50 mt-1">
                 {searchQuery.trim().length === 0 && (
                   <div className="p-2 bg-gray-700 text-sm font-medium border-b border-gray-600 text-yellow-300">
                     {gameMode === "actor_to_movies"
@@ -1463,15 +1620,10 @@ const MovieMatch = () => {
                           : 'title' in item ? item.title : ""}
                       </div>
                       <div className="text-xs text-gray-400">
-                        {gameMode === "actor_to_movies"
-                          ? `Known for: ${
-                              'known_for_department' in item ? item.known_for_department : "Acting"
-                            }`
-                          : `Released: ${
-                              'release_date' in item && item.release_date
-                                ? new Date(item.release_date).getFullYear()
-                                : "Unknown"
-                            }`}
+                        {gameMode === "movie_to_actors" && 'release_date' in item && item.release_date
+                          ? `Released: ${new Date(item.release_date).getFullYear()}`
+                          : ""}
+                      </div>
                       </div>
                     </div>
                   </div>
@@ -1551,35 +1703,55 @@ const MovieMatch = () => {
         </div>
       )}
 
-      {(gameState === "playing" || gameState === "challenge") && selectedItem && (
+      {(gameState === "playing" || gameState === "challenge") && (gameState === "challenge" ? tempChallengeItem : selectedItem) && (
         <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-30">
           {/* Selected item display */}
           <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
             <div className="w-16 h-20 bg-gray-900 rounded mr-3 overflow-hidden">
               <img
                 src={
-                  gameMode === "actor_to_movies"
-                    ? 'profile_path' in selectedItem ? selectedItem.profile_path : ""
-                    : 'poster_path' in selectedItem ? selectedItem.poster_path : ""
+                  gameState === "challenge" ? (
+                    // For challenge, show the opposite type from the current game mode
+                    gameMode === "actor_to_movies" ?
+                      ('poster_path' in tempChallengeItem! ? tempChallengeItem!.poster_path : "") :
+                      ('profile_path' in tempChallengeItem! ? tempChallengeItem!.profile_path : "")
+                  ) : (
+                    // For regular gameplay, show according to game mode
+                    gameMode === "actor_to_movies"
+                      ? 'profile_path' in selectedItem! ? selectedItem!.profile_path : ""
+                      : 'poster_path' in selectedItem! ? selectedItem!.poster_path : ""
+                  )
                 }
-                alt={
-                  gameMode === "actor_to_movies"
-                    ? 'name' in selectedItem ? selectedItem.name : ""
-                    : 'title' in selectedItem ? selectedItem.title : ""
-                }
+                alt="Item"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-grow">
               <div className="font-bold text-lg text-yellow-300">
-                {gameMode === "actor_to_movies"
-                  ? 'name' in selectedItem ? selectedItem.name : ""
-                  : 'title' in selectedItem ? selectedItem.title : ""}
+                {gameState === "challenge" ? (
+                  // For challenge, show the opposite type from the current game mode
+                  gameMode === "actor_to_movies" ?
+                    ('title' in tempChallengeItem! ? tempChallengeItem!.title : "") :
+                    ('name' in tempChallengeItem! ? tempChallengeItem!.name : "")
+                ) : (
+                  // For regular gameplay, show according to game mode
+                  gameMode === "actor_to_movies"
+                    ? 'name' in selectedItem! ? selectedItem!.name : ""
+                    : 'title' in selectedItem! ? selectedItem!.title : ""
+                )}
               </div>
               <div className="text-sm text-gray-300">
-                {gameMode === "actor_to_movies"
-                  ? "Name a movie starring this actor"
-                  : "Name an actor in this movie"}
+                {gameState === "challenge" ? (
+                  // For challenges, display what the player needs to name
+                  gameMode === "actor_to_movies" ?
+                    "Name an actor in this movie" :
+                    "Name a movie starring this actor"
+                ) : (
+                  // For regular gameplay
+                  gameMode === "actor_to_movies"
+                    ? "Name a movie starring this actor"
+                    : "Name an actor in this movie"
+                )}
               </div>
             </div>
           </div>
@@ -1903,7 +2075,7 @@ const MovieMatch = () => {
 
       {/* Footer */}
       <div className="text-center text-xs text-yellow-200 mt-2 z-30">
-        <p>Denver Labs 2025</p>
+        <p>MovieMatch Game - Developed by Will Thornton & Claude</p>
         <p>
           Data provided by{" "}
           <a href="https://www.themoviedb.org" className="text-yellow-400 hover:underline">

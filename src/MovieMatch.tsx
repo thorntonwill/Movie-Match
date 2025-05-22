@@ -611,20 +611,51 @@ const MovieMatch = () => {
   const fetchPopularPeople = async (): Promise<void> => {
     setSearchLoading(true);
     try {
-      // Instead of making API call, use a randomized selection from our TOP_ACTORS
       const randomizedActors = [...TOP_ACTORS]
-        .sort(() => 0.5 - Math.random()) // Shuffle the array
-        .slice(0, 6);  // Take only 6 actors
-      
-      const peopleWithBasicInfo = randomizedActors.map(actor => ({
-        ...actor,
-        profile_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(actor.name)}`, // Better placeholder
-        known_for_department: "Acting"
-      }));
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 6);
 
-      setSearchResults(peopleWithBasicInfo);
+      const peoplePromises = randomizedActors.map(async (actor) => {
+        try {
+          const response = await fetch(
+            `${TMDB_BASE_URL}/person/${actor.id}?api_key=${TMDB_API_KEY}&language=en-US`
+          );
+          if (!response.ok) {
+            // Don't throw, just return a placeholder for this actor
+            console.warn(`Failed to fetch details for actor ${actor.id}`);
+            return {
+              id: actor.id,
+              name: actor.name,
+              profile_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(actor.name)}`,
+              known_for_department: "Acting", // Default value
+            };
+          }
+          const data = await response.json();
+          return {
+            id: data.id,
+            name: data.name,
+            profile_path: data.profile_path
+              ? `${TMDB_IMAGE_BASE_URL}/w185${data.profile_path}`
+              : `https://via.placeholder.com/185x278?text=${encodeURIComponent(data.name)}`,
+            known_for_department: data.known_for_department || "Acting",
+            popularity: data.popularity,
+          };
+        } catch (error) {
+          console.error(`Error fetching details for actor ${actor.id}:`, error);
+          // Return placeholder if individual fetch fails
+          return {
+            id: actor.id,
+            name: actor.name,
+            profile_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(actor.name)}`,
+            known_for_department: "Acting",
+          };
+        }
+      });
+
+      const peopleWithDetails = (await Promise.all(peoplePromises)).filter(p => p !== null) as PersonResult[];
+      setSearchResults(peopleWithDetails);
     } catch (error) {
-      console.error("Error preparing actor list:", error);
+      console.error("Error fetching popular people:", error);
       setSearchResults([]);
     } finally {
       setSearchLoading(false);
@@ -635,20 +666,50 @@ const MovieMatch = () => {
   const fetchPopularMovies = async (): Promise<void> => {
     setSearchLoading(true);
     try {
-      // Instead of making API call, use a randomized selection from our TOP_MOVIES
       const randomizedMovies = [...TOP_MOVIES]
-        .sort(() => 0.5 - Math.random()) // Shuffle the array
-        .slice(0, 6);  // Take only 6 movies
-      
-      const moviesWithBasicInfo = randomizedMovies.map(movie => ({
-        ...movie,
-        poster_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(movie.title)}`, // Better placeholder
-        release_date: "2023-01-01" // Default date
-      }));
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 6);
 
-      setSearchResults(moviesWithBasicInfo);
+      const moviePromises = randomizedMovies.map(async (movie) => {
+        try {
+          const response = await fetch(
+            `${TMDB_BASE_URL}/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=en-US`
+          );
+          if (!response.ok) {
+            console.warn(`Failed to fetch details for movie ${movie.id}`);
+            return {
+              id: movie.id,
+              title: movie.title,
+              poster_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(movie.title)}`,
+              release_date: "N/A", // Default value
+            };
+          }
+          const data = await response.json();
+          return {
+            id: data.id,
+            title: data.title,
+            poster_path: data.poster_path
+              ? `${TMDB_IMAGE_BASE_URL}/w185${data.poster_path}`
+              : `https://via.placeholder.com/185x278?text=${encodeURIComponent(data.title)}`,
+            release_date: data.release_date || "N/A",
+            popularity: data.popularity,
+          };
+        } catch (error) {
+          console.error(`Error fetching details for movie ${movie.id}:`, error);
+          // Return placeholder if individual fetch fails
+          return {
+            id: movie.id,
+            title: movie.title,
+            poster_path: `https://via.placeholder.com/185x278?text=${encodeURIComponent(movie.title)}`,
+            release_date: "N/A",
+          };
+        }
+      });
+      
+      const moviesWithDetails = (await Promise.all(moviePromises)).filter(m => m !== null) as MovieResult[];
+      setSearchResults(moviesWithDetails);
     } catch (error) {
-      console.error("Error preparing movie list:", error);
+      console.error("Error fetching popular movies:", error);
       setSearchResults([]);
     } finally {
       setSearchLoading(false);
@@ -1351,6 +1412,7 @@ const MovieMatch = () => {
     if (!showEffect) return null;
     
     return (
+      // z-40: Sparkle effects, should be above general UI but potentially below modals/critical alerts if any (though dropdown is z-50).
       <div className={`absolute inset-0 pointer-events-none z-40 
         ${effectType === "success" ? "sparkle-container-success" : "sparkle-container-failure"}`}>
         {Array.from({ length: 20 }).map((_, i) => (
@@ -1380,19 +1442,23 @@ const MovieMatch = () => {
       <style dangerouslySetInnerHTML={{ __html: styleSheet }} />
       
       {/* Theater curtains */}
+      {/* z-10: Positions curtains above background, below other UI elements. */}
       <div className={`absolute top-0 left-0 w-1/2 h-full bg-red-800 curtain-left z-10 ${curtainsOpen ? "curtain-open-left" : ""}`}></div>
+      {/* z-10: Positions curtains above background, below other UI elements. */}
       <div className={`absolute top-0 right-0 w-1/2 h-full bg-red-800 curtain-right z-10 ${curtainsOpen ? "curtain-open-right" : ""}`}></div>
       
       {/* Sparkles effect overlay */}
       {renderSparkles()}
       
       {/* Movie theater lights */}
+      {/* z-5: Decorative lights, sit near the background. */}
       <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
       <div className="absolute top-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
       <div className="absolute bottom-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
       <div className="absolute bottom-1 right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse z-5"></div>
 
       {/* Header */}
+      {/* z-40: Intended to be below dropdown (z-50) but above curtains/background elements. */}
       <div className="w-full mb-4 text-center z-40">
         <h1 className="text-3xl font-bold mb-2 text-yellow-400 cinema-title">Movie Match</h1>
         {gameState !== "landing" && (
@@ -1406,6 +1472,7 @@ const MovieMatch = () => {
 
       {/* Player Scores */}
       {gameState !== "landing" && (
+        // z-40: Similar to header, below dropdown, above background.
         <div className="flex justify-between w-full mb-4 z-40">
           {players.map((player, index) => (
             <div
@@ -1443,6 +1510,7 @@ const MovieMatch = () => {
 
       {/* Game Screens */}
       {gameState === "landing" && (
+        // z-40: Main game screen area, intended to be below dropdown if it overlaps.
         <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-xl font-bold mb-4 text-center text-yellow-400">How to Play</h2>
 
@@ -1497,6 +1565,7 @@ const MovieMatch = () => {
       )}
 
       {gameState === "setup" && (
+        // z-40: Main game screen area, intended to be below dropdown if it overlaps.
         <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-lg font-bold mb-3 text-yellow-400">
             {gameMode === "actor_to_movies"
@@ -1553,6 +1622,7 @@ const MovieMatch = () => {
             </div>
 
             {showDropdown && searchResults.length > 0 && (
+              // z-50: Ensures dropdown is above most other content
               <div className="absolute w-full bg-gray-800 border border-gray-700 rounded shadow-lg max-h-64 overflow-y-auto z-50 mt-1">
                 {searchQuery.trim().length === 0 && (
                   <div className="p-2 bg-gray-700 text-sm font-medium border-b border-gray-600 text-yellow-300">
@@ -1709,6 +1779,7 @@ const MovieMatch = () => {
       )}
 
       {(gameState === "playing" || gameState === "challenge") && (gameState === "challenge" ? tempChallengeItem : selectedItem) && (
+        // z-40: Main game screen area, intended to be below dropdown if it overlaps.
         <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           {/* Selected item display */}
           <div className="flex items-center mb-4 bg-gray-800 p-3 rounded-lg w-full border border-yellow-600">
@@ -2024,6 +2095,7 @@ const MovieMatch = () => {
       )}
 
       {gameState === "roundEnd" && !winner && (
+        // z-40: Main game screen area, intended to be below dropdown if it overlaps.
         <div className="w-full bg-gray-900 rounded-lg p-4 shadow-lg shadow-black/50 mb-6 border-2 border-yellow-500 z-40">
           <h2 className="text-lg font-bold mb-3 text-center text-yellow-400">
             Round Complete!
@@ -2099,6 +2171,7 @@ const MovieMatch = () => {
       )}
 
       {(gameState === "gameOver" || winner) && winner && (
+        // z-40: Main game screen area, intended to be below dropdown if it overlaps.
         <div className="w-full bg-gray-900 rounded-lg p-6 shadow-lg shadow-black/50 mb-6 text-center border-2 border-yellow-500 z-40">
           <h2 className="text-xl font-bold mb-3 text-yellow-400">Game Over!</h2>
 
@@ -2133,7 +2206,7 @@ const MovieMatch = () => {
       )}
 
       {/* Footer */}
-      <div className="text-center text-xs text-yellow-200 mt-2 z-40">
+      <div className="text-center text-xs text-yellow-200 mt-2">
         <p>Denver Labs 2025</p>
         <p>
           Data provided by{" "}
